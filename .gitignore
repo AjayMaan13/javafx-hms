@@ -1,0 +1,68 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+.kotlin
+
+### IntelliJ IDEA ###
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+.mvn/
+*.iws
+*.iml
+*.ipr
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+
+### Windows ###
+Thumbs.db
+desktop.ini
+
+### Hotel Reservation System — project-specific ###
+# Runtime logs (rotating FileHandler output)
+/logs/
+*.log
+*.log.*
+
+# Generated report exports (CSV/PDF/TXT)
+/exports/
+
+# Embedded/local database files (H2, SQLite, etc.)
+*.db
+*.mv.db
+*.trace.db
+*.sqlite
+*.sqlite3
+
+# Local DB credentials / environment overrides — never commit secrets
+.env
+application-local.properties
+persistence-local.xml
+
+# Crash dumps
+hs_err_pid*.log
