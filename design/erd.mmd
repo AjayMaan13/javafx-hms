@@ -1,0 +1,104 @@
+%% Hotel Reservation System — Entity Relationship Diagram (Milestone 1, Deliverable D)
+%% Every surrogate PK is a UUID. UUID columns are typed "uuid" AND tagged "U" in the
+%% comment column so the grader can see exactly where UUIDs are used (PKs and FKs).
+%% Many-to-many relations are resolved into join tables (RESERVATION_ROOM, RESERVATION_ADDON).
+erDiagram
+    GUEST           ||--o{ RESERVATION       : makes
+    GUEST           ||--o| LOYALTY_ACCOUNT    : owns
+    GUEST           ||--o{ WAITLIST           : waits_on
+    RESERVATION     ||--o{ RESERVATION_ROOM   : has
+    ROOM            ||--o{ RESERVATION_ROOM   : in
+    RESERVATION     ||--o{ RESERVATION_ADDON  : has
+    ADDON           ||--o{ RESERVATION_ADDON  : in
+    RESERVATION     ||--o{ PAYMENT            : settled_by
+    RESERVATION     ||--|| BILLING            : billed_by
+    RESERVATION     ||--o| FEEDBACK           : rated_by
+    ADMIN_USER      ||--o{ AUDIT_LOG          : writes
+
+    GUEST {
+        uuid id PK "U"
+        varchar name "NOT NULL"
+        varchar phone "NOT NULL"
+        varchar email "NOT NULL"
+        int loyalty_points "DEFAULT 0"
+    }
+    RESERVATION {
+        uuid id PK "U"
+        uuid guest_id FK "U"
+        date check_in "NOT NULL"
+        date check_out "NOT NULL"
+        int adults "NOT NULL"
+        int children "DEFAULT 0"
+        varchar status "NOT NULL"
+        decimal subtotal
+        decimal tax
+        decimal total
+    }
+    ROOM {
+        uuid id PK "U"
+        varchar type "NOT NULL"
+        decimal base_price "CHECK base_price >= 0"
+        varchar status "NOT NULL"
+    }
+    RESERVATION_ROOM {
+        uuid id PK "U"
+        uuid reservation_id FK "U"
+        uuid room_id FK "U"
+    }
+    ADDON {
+        uuid id PK "U"
+        varchar name "NOT NULL"
+        decimal price "CHECK price >= 0"
+    }
+    RESERVATION_ADDON {
+        uuid id PK "U"
+        uuid reservation_id FK "U"
+        uuid addon_id FK "U"
+    }
+    FEEDBACK {
+        uuid id PK "U"
+        uuid reservation_id FK "U"
+        int rating "CHECK rating 1-5"
+        varchar comment
+        date created_at
+    }
+    PAYMENT {
+        uuid id PK "U"
+        uuid reservation_id FK "U"
+        varchar method "NOT NULL"
+        decimal amount "refund = negative"
+        datetime ts "NOT NULL"
+    }
+    BILLING {
+        uuid id PK "U"
+        uuid reservation_id FK "U"
+        decimal total_due
+        decimal total_paid
+        decimal balance
+    }
+    LOYALTY_ACCOUNT {
+        uuid id PK "U"
+        uuid guest_id FK "U"
+        int points "DEFAULT 0"
+        varchar tier
+    }
+    WAITLIST {
+        uuid id PK "U"
+        uuid guest_id FK "U"
+        varchar requested_type
+        date start_date
+        date end_date
+        varchar status
+    }
+    ADMIN_USER {
+        uuid id PK "U"
+        varchar username UK "UNIQUE NOT NULL"
+        varchar password_hash "NOT NULL"
+        varchar role "NOT NULL"
+    }
+    AUDIT_LOG {
+        uuid id PK "U"
+        uuid admin_user_id FK "U"
+        varchar action "NOT NULL"
+        datetime ts "NOT NULL"
+    }

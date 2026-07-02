@@ -1,0 +1,123 @@
+%% Hotel Reservation System — Domain Model (Milestone 1, Deliverable B)
+%% Merged class diagram: booking-side (Person A) + back-office (Person B) core entities.
+%% Pattern placements are called out with note boxes (Factory / Strategy / Decorator).
+classDiagram
+    direction LR
+
+    class Guest {
+        +UUID id
+        +String name
+        +String phone
+        +String email
+        +int loyaltyPoints
+    }
+    class Reservation {
+        +UUID id
+        +LocalDate checkIn
+        +LocalDate checkOut
+        +int adults
+        +int children
+        +ReservationStatus status
+        +double subtotal
+        +double tax
+        +double total
+    }
+    class Room {
+        +UUID id
+        +RoomType type
+        +double basePrice
+        +RoomStatus status
+    }
+    class Addon {
+        +UUID id
+        +String name
+        +double price
+    }
+    class Feedback {
+        +UUID id
+        +int rating
+        +String comment
+        +LocalDate createdAt
+    }
+    class Payment {
+        +UUID id
+        +PaymentMethod method
+        +double amount
+        +LocalDateTime timestamp
+    }
+    class Billing {
+        +UUID id
+        +double totalDue
+        +double totalPaid
+        +double balance
+    }
+    class LoyaltyAccount {
+        +UUID id
+        +int points
+        +String tier
+    }
+    class AdminUser {
+        +UUID id
+        +String username
+        +String passwordHash
+        +Role role
+    }
+    class Waitlist {
+        +UUID id
+        +RoomType requestedType
+        +LocalDate startDate
+        +LocalDate endDate
+        +String status
+    }
+    class AuditLog {
+        +UUID id
+        +String action
+        +LocalDateTime timestamp
+    }
+
+    class RoomType {
+        <<enumeration>>
+        SINGLE
+        DOUBLE
+        PENTHOUSE
+    }
+    class RoomStatus {
+        <<enumeration>>
+        AVAILABLE
+        OCCUPIED
+        MAINTENANCE
+    }
+    class ReservationStatus {
+        <<enumeration>>
+        PENDING
+        CONFIRMED
+        CHECKED_IN
+        CHECKED_OUT
+        CANCELLED
+    }
+    class PaymentMethod {
+        <<enumeration>>
+        CASH
+        CARD
+        LOYALTY
+    }
+    class Role {
+        <<enumeration>>
+        ADMIN
+        MANAGER
+    }
+
+    Guest "1" --> "*" Reservation : makes
+    Reservation "*" --> "*" Room : includes
+    Reservation "*" --> "*" Addon : has
+    Reservation "1" --> "*" Payment : settled by
+    Reservation "1" --> "0..1" Feedback : rated by
+    Reservation "1" --> "1" Billing : billed by
+    Guest "1" --> "0..1" LoyaltyAccount : owns
+    Guest "1" --> "*" Waitlist : waits on
+    AdminUser "*" --> "1" Role : has
+    AdminUser "1" --> "*" AuditLog : writes
+
+    note for Room "Built by RoomFactory — Factory pattern (M2)"
+    note for Reservation "Price via PricingService — Strategy pattern (M2)"
+    note for Billing "Add-ons stacked on the bill — Decorator pattern (Final)"
