@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- KIOSK STEP 6: Guest details. Required-field indicators (*) + inline error text. -->
+<BorderPane prefHeight="600.0" prefWidth="900.0" stylesheets="@kiosk.css"
+            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" styleClass="header">
+            <Label styleClass="header-title" text="Maple Leaf Hotel — Self Check-in Kiosk" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label styleClass="header-step" text="Step 5 of 7  ·  Your details" />
+        </HBox>
+    </top>
+
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="20.0">
+            <padding>
+                <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+            </padding>
+
+            <Label styleClass="page-title" text="Your details" />
+            <Label styleClass="subtitle" text="Fields marked * are required." />
+
+            <VBox maxWidth="480.0" spacing="6.0" styleClass="card">
+                <GridPane hgap="16.0" vgap="6.0">
+                    <!-- Full name -->
+                    <HBox GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label styleClass="field-label" text="Full name " />
+                        <Label styleClass="required" text="*" />
+                    </HBox>
+                    <TextField fx:id="nameField" prefWidth="280.0" promptText="e.g. Jordan Smith"
+                               GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                    <Label styleClass="error-text" text="Name is required."
+                           GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                    <!-- Phone -->
+                    <HBox GridPane.columnIndex="0" GridPane.rowIndex="2">
+                        <Label styleClass="field-label" text="Phone " />
+                        <Label styleClass="required" text="*" />
+                    </HBox>
+                    <TextField fx:id="phoneField" prefWidth="280.0" promptText="(555) 123-4567"
+                               GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                    <Label styleClass="error-text" text="Enter a valid phone number."
+                           GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                    <!-- Email -->
+                    <HBox GridPane.columnIndex="0" GridPane.rowIndex="4">
+                        <Label styleClass="field-label" text="Email " />
+                        <Label styleClass="required" text="*" />
+                    </HBox>
+                    <TextField fx:id="emailField" prefWidth="280.0" promptText="you@example.com"
+                               GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                    <Label styleClass="error-text" text="Enter a valid email address."
+                           GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                </GridPane>
+            </VBox>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="12.0">
+            <padding>
+                <Insets bottom="20.0" left="40.0" right="40.0" top="10.0" />
+            </padding>
+            <Button styleClass="secondary-btn" text="←  Back" />
+            <Button styleClass="primary-btn" text="Next  →" />
+        </HBox>
+    </bottom>
+</BorderPane>

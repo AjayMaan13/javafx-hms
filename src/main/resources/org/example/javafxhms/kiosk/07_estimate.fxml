@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- KIOSK STEP 7: Estimate. Subtotal + tax + add-ons + loyalty effect = total. -->
+<BorderPane prefHeight="600.0" prefWidth="900.0" stylesheets="@kiosk.css"
+            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" styleClass="header">
+            <Label styleClass="header-title" text="Maple Leaf Hotel — Self Check-in Kiosk" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label styleClass="header-step" text="Step 6 of 7  ·  Estimate" />
+        </HBox>
+    </top>
+
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="20.0">
+            <padding>
+                <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+            </padding>
+
+            <Label styleClass="page-title" text="Price estimate" />
+            <Label styleClass="subtitle" text="Final billing is settled at the front desk." />
+
+            <VBox maxWidth="420.0" spacing="10.0" styleClass="card">
+                <GridPane hgap="40.0" vgap="10.0">
+                    <Label text="Room (1 × Double, 2 nights)" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <Label text="\$240.00" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                    <Label text="Add-ons (Wi-Fi, Breakfast)" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <Label text="\$34.00" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                    <Label text="Subtotal" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                    <Label text="\$274.00" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                    <Label text="Tax (13%)" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                    <Label text="\$35.62" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                    <Label styleClass="price-tag" text="Loyalty discount" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                    <Label styleClass="price-tag" text="– $10.00" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                </GridPane>
+
+                <Separator />
+
+                <HBox>
+                    <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Total" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="\$299.62" />
+                </HBox>
+            </VBox>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="12.0">
+            <padding>
+                <Insets bottom="20.0" left="40.0" right="40.0" top="10.0" />
+            </padding>
+            <Button styleClass="secondary-btn" text="←  Back" />
+            <Button styleClass="primary-btn" text="Confirm Booking  →" />
+        </HBox>
+    </bottom>
+</BorderPane>

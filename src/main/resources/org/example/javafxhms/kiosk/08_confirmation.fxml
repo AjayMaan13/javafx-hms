@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- KIOSK STEP 8: Confirmation. "Saved; pay billing at front desk." -->
+<BorderPane prefHeight="600.0" prefWidth="900.0" stylesheets="@kiosk.css"
+            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" styleClass="header">
+            <Label styleClass="header-title" text="Maple Leaf Hotel — Self Check-in Kiosk" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label styleClass="header-step" text="Done" />
+        </HBox>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER" spacing="20.0">
+            <padding>
+                <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+            </padding>
+
+            <!-- simple success badge -->
+            <Label style="-fx-font-size: 56px; -fx-text-fill: #2e7d32;" text="✓" />
+
+            <Label styleClass="page-title" text="Booking confirmed!" />
+            <Label styleClass="subtitle" text="Your reservation has been saved."
+                   wrapText="true" />
+
+            <VBox alignment="CENTER" maxWidth="420.0" spacing="6.0" styleClass="card">
+                <Label style="-fx-font-weight: bold;" text="Confirmation #: HMS-2026-00417" />
+                <Label styleClass="subtitle" text="Please settle your balance at the front desk on arrival." />
+            </VBox>
+
+            <Button styleClass="primary-btn" text="Done — Return to Welcome" />
+        </VBox>
+    </center>
+</BorderPane>
