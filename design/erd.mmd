@@ -1,26 +1,34 @@
-%% Hotel Reservation System — Entity Relationship Diagram (Milestone 1, Deliverable D)
+%% Hotel Reservation System - Entity Relationship Diagram (Milestone 1, Deliverable D)
 %% Every surrogate PK is a UUID. UUID columns are typed "uuid" AND tagged "U" in the
 %% comment column so the grader can see exactly where UUIDs are used (PKs and FKs).
 %% Many-to-many relations are resolved into join tables (RESERVATION_ROOM, RESERVATION_ADDON).
+%% Loyalty is linked to billing through LOYALTY_TRANSACTION so points earned/redeemed
+%% can be audited against the bill, payment, configured rate, and redemption cap.
 erDiagram
-    GUEST           ||--o{ RESERVATION       : makes
-    GUEST           ||--o| LOYALTY_ACCOUNT    : owns
-    GUEST           ||--o{ WAITLIST           : waits_on
-    RESERVATION     ||--o{ RESERVATION_ROOM   : has
-    ROOM            ||--o{ RESERVATION_ROOM   : in
-    RESERVATION     ||--o{ RESERVATION_ADDON  : has
-    ADDON           ||--o{ RESERVATION_ADDON  : in
-    RESERVATION     ||--o{ PAYMENT            : settled_by
-    RESERVATION     ||--|| BILLING            : billed_by
-    RESERVATION     ||--o| FEEDBACK           : rated_by
-    ADMIN_USER      ||--o{ AUDIT_LOG          : writes
+    GUEST           ||--o{ RESERVATION          : makes
+    GUEST           ||--o| LOYALTY_ACCOUNT      : owns
+    GUEST           ||--o{ WAITLIST             : waits_on
+    RESERVATION     ||--o{ RESERVATION_ROOM     : has
+    ROOM            ||--o{ RESERVATION_ROOM     : in
+    RESERVATION     ||--o{ RESERVATION_ADDON    : has
+    ADDON           ||--o{ RESERVATION_ADDON    : in
+    RESERVATION     ||--o{ PAYMENT              : settled_by
+    RESERVATION     ||--|| BILLING              : billed_by
+    RESERVATION     ||--o| FEEDBACK             : rated_by
+    BILLING         ||--o{ LOYALTY_TRANSACTION  : applies
+    PAYMENT         ||--o{ LOYALTY_TRANSACTION  : earns_from
+    LOYALTY_ACCOUNT ||--o{ LOYALTY_TRANSACTION  : records
+    LOYALTY_CONFIG  ||--o{ LOYALTY_TRANSACTION  : uses
+    ADMIN_USER      ||--o{ AUDIT_LOG            : writes
+    ADMIN_USER      ||--o{ LOYALTY_TRANSACTION  : approves
 
     GUEST {
         uuid id PK "U"
         varchar name "NOT NULL"
         varchar phone "NOT NULL"
         varchar email "NOT NULL"
-        int loyalty_points "DEFAULT 0"
+        varchar address
+        varchar postal_code
     }
     RESERVATION {
         uuid id PK "U"
@@ -73,14 +81,40 @@ erDiagram
         uuid id PK "U"
         uuid reservation_id FK "U"
         decimal total_due
+        decimal loyalty_discount "DEFAULT 0"
+        int points_redeemed "DEFAULT 0"
+        int points_earned "DEFAULT 0"
         decimal total_paid
         decimal balance
     }
     LOYALTY_ACCOUNT {
         uuid id PK "U"
         uuid guest_id FK "U"
-        int points "DEFAULT 0"
+        int points_balance "DEFAULT 0"
         varchar tier
+        varchar status "ACTIVE/INACTIVE"
+    }
+    LOYALTY_CONFIG {
+        uuid id PK "U"
+        decimal earn_rate "points per paid amount"
+        decimal redeem_rate "discount per point"
+        decimal redemption_cap_percent "max bill discount"
+        boolean active "ONLY one active"
+    }
+    LOYALTY_TRANSACTION {
+        uuid id PK "U"
+        uuid loyalty_account_id FK "U"
+        uuid billing_id FK "U"
+        uuid payment_id FK "U nullable"
+        uuid config_id FK "U"
+        uuid admin_user_id FK "U nullable"
+        varchar type "EARN/REDEEM/ADJUST"
+        int points_delta "earned positive, redeemed negative"
+        int balance_after "audit balance"
+        decimal paid_amount_basis "for earning"
+        decimal discount_amount "for redemption"
+        decimal cap_applied "configured limit used"
+        datetime ts "NOT NULL"
     }
     WAITLIST {
         uuid id PK "U"

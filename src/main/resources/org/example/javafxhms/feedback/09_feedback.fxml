@@ -30,7 +30,7 @@
             </padding>
 
             <Label styleClass="page-title" text="How was your stay?" />
-            <Label styleClass="subtitle" text="Your feedback helps us improve. (Available after checkout.)" />
+            <Label styleClass="subtitle" text="Your feedback helps us improve." />
 
             <VBox maxWidth="460.0" spacing="16.0" styleClass="card">
                 <Label styleClass="field-label" text="Your rating" />

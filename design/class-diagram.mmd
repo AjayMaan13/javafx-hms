@@ -1,4 +1,4 @@
-%% Hotel Reservation System — Domain Model (Milestone 1, Deliverable B)
+%% Hotel Reservation System - Domain Model (Milestone 1, Deliverable B)
 %% Merged class diagram: booking-side (Person A) + back-office (Person B) core entities.
 %% Pattern placements are called out with note boxes (Factory / Strategy / Decorator).
 classDiagram
@@ -9,7 +9,8 @@ classDiagram
         +String name
         +String phone
         +String email
-        +int loyaltyPoints
+        +String address
+        +String postalCode
     }
     class Reservation {
         +UUID id
@@ -48,13 +49,34 @@ classDiagram
     class Billing {
         +UUID id
         +double totalDue
+        +double loyaltyDiscount
+        +int pointsRedeemed
+        +int pointsEarned
         +double totalPaid
         +double balance
     }
     class LoyaltyAccount {
         +UUID id
-        +int points
+        +int pointsBalance
         +String tier
+        +String status
+    }
+    class LoyaltyConfig {
+        +UUID id
+        +double earnRate
+        +double redeemRate
+        +double redemptionCapPercent
+        +boolean active
+    }
+    class LoyaltyTransaction {
+        +UUID id
+        +LoyaltyTransactionType type
+        +int pointsDelta
+        +int balanceAfter
+        +double paidAmountBasis
+        +double discountAmount
+        +double capApplied
+        +LocalDateTime timestamp
     }
     class AdminUser {
         +UUID id
@@ -79,7 +101,9 @@ classDiagram
         <<enumeration>>
         SINGLE
         DOUBLE
-        PENTHOUSE
+        QUEEN
+        SUITE
+        ACCESSIBLE
     }
     class RoomStatus {
         <<enumeration>>
@@ -101,6 +125,12 @@ classDiagram
         CARD
         LOYALTY
     }
+    class LoyaltyTransactionType {
+        <<enumeration>>
+        EARN
+        REDEEM
+        ADJUST
+    }
     class Role {
         <<enumeration>>
         ADMIN
@@ -114,10 +144,16 @@ classDiagram
     Reservation "1" --> "0..1" Feedback : rated by
     Reservation "1" --> "1" Billing : billed by
     Guest "1" --> "0..1" LoyaltyAccount : owns
+    LoyaltyAccount "1" --> "*" LoyaltyTransaction : records
+    Billing "1" --> "*" LoyaltyTransaction : applies
+    Payment "0..1" --> "*" LoyaltyTransaction : earns from
+    LoyaltyConfig "1" --> "*" LoyaltyTransaction : controls
+    AdminUser "0..1" --> "*" LoyaltyTransaction : approves
     Guest "1" --> "*" Waitlist : waits on
     AdminUser "*" --> "1" Role : has
     AdminUser "1" --> "*" AuditLog : writes
 
-    note for Room "Built by RoomFactory — Factory pattern (M2)"
-    note for Reservation "Price via PricingService — Strategy pattern (M2)"
-    note for Billing "Add-ons stacked on the bill — Decorator pattern (Final)"
+    note for Room "Built by RoomFactory - Factory pattern (M2)"
+    note for Reservation "Price via PricingService - Strategy pattern (M2)"
+    note for Billing "Add-ons, discounts, and loyalty redemptions adjust the bill"
+    note for LoyaltyConfig "LoyaltyStrategy uses configurable earn/redeem rates and redemption caps"

@@ -53,10 +53,12 @@
             <VBox spacing="12.0" styleClass="card">
                 <GridPane hgap="24.0" vgap="10.0">
                     <Label styleClass="field-label" text="Guest name" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                    <TextField prefWidth="200.0" text="Jordan Smith" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                    <TextField fx:id="guestNameField" prefWidth="200.0" promptText="Guest name from reservation"
+                               GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
                     <Label styleClass="field-label" text="Phone" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-                    <TextField prefWidth="160.0" text="(555) 123-4567" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+                    <TextField fx:id="guestPhoneField" prefWidth="160.0" promptText="Phone from reservation"
+                               GridPane.columnIndex="3" GridPane.rowIndex="0" />
 
                     <Label styleClass="field-label" text="Check-in" GridPane.columnIndex="0" GridPane.rowIndex="1" />
                     <DatePicker prefWidth="160.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />

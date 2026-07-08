@@ -1,9 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -21,7 +24,7 @@
 
     <top>
         <HBox alignment="CENTER_LEFT" styleClass="header">
-            <Label styleClass="header-title" text="Maple Leaf Hotel — Admin" />
+            <Label styleClass="header-title" text="Maple Leaf Hotel - Admin" />
             <Region HBox.hgrow="ALWAYS" />
             <Label styleClass="header-step" text="Payments" />
         </HBox>
@@ -40,12 +43,14 @@
     </left>
 
     <center>
-        <VBox spacing="16.0">
-            <padding>
-                <Insets bottom="20.0" left="24.0" right="24.0" top="20.0" />
-            </padding>
+        <ScrollPane fitToWidth="true">
+            <content>
+                <VBox spacing="16.0">
+                    <padding>
+                        <Insets bottom="20.0" left="24.0" right="24.0" top="20.0" />
+                    </padding>
 
-            <Label styleClass="page-title" text="Payments — Reservation #HMS-2026-00417" />
+            <Label styleClass="page-title" text="Payments - Reservation #HMS-2026-00417" />
 
             <!-- Balance summary -->
             <HBox spacing="40.0" styleClass="card">
@@ -62,6 +67,46 @@
                     <Label styleClass="balance-due" style="-fx-font-size: 18px;" text="\$149.62" />
                 </VBox>
             </HBox>
+
+            <!-- Role-based discount controls -->
+            <VBox spacing="10.0" styleClass="card">
+                <Label styleClass="field-label" text="Apply Role-Based Discount" />
+                <GridPane hgap="20.0" vgap="10.0">
+                    <Label styleClass="field-label" text="User Role" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <ComboBox prefWidth="180.0" promptText="Select role" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Admin - max 15%" />
+                                <String fx:value="Manager - max 30%" />
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+
+                    <Label styleClass="field-label" text="Discount Option" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                    <ComboBox prefWidth="190.0" promptText="Choose discount" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="5% Courtesy Discount" />
+                                <String fx:value="10% Loyalty Discount" />
+                                <String fx:value="15% Admin Maximum" />
+                                <String fx:value="30% Manager Maximum" />
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+
+                    <Label styleClass="field-label" text="Custom %" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <TextField prefWidth="180.0" promptText="0 - 30" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                    <Label styleClass="field-label" text="Applied By" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                    <TextField prefWidth="190.0" promptText="Employee name / ID" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                </GridPane>
+                <Label styleClass="error-text"
+                       text="System rule: Admin discounts cannot exceed 15%; Manager discounts cannot exceed 30%." />
+                <HBox spacing="12.0">
+                    <Button styleClass="primary-btn" text="Apply Discount" />
+                    <Button styleClass="secondary-btn" text="Clear Discount" />
+                </HBox>
+            </VBox>
 
             <!-- New payment / refund form -->
             <VBox spacing="10.0" styleClass="card">
@@ -90,6 +135,19 @@
                     <TableColumn prefWidth="120.0" text="Amount" />
                 </columns>
             </TableView>
-        </VBox>
+
+            <Label styleClass="field-label" text="Discount Audit" />
+            <TableView fx:id="discountAuditTable" prefHeight="120.0">
+                <columns>
+                    <TableColumn prefWidth="140.0" text="Date/Time" />
+                    <TableColumn prefWidth="120.0" text="Role" />
+                    <TableColumn prefWidth="120.0" text="Discount %" />
+                    <TableColumn prefWidth="180.0" text="Applied By" />
+                    <TableColumn prefWidth="220.0" text="Approval / Cap Status" />
+                </columns>
+            </TableView>
+                </VBox>
+            </content>
+        </ScrollPane>
     </center>
 </BorderPane>

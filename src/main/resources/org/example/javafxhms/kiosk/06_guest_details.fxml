@@ -2,7 +2,10 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.GridPane?>
@@ -10,61 +13,145 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!-- KIOSK STEP 6: Guest details. Required-field indicators (*) + inline error text. -->
+<!-- KIOSK STEP 6: Detailed guest profile, address, and loyalty lookup. -->
 <BorderPane prefHeight="600.0" prefWidth="900.0" stylesheets="@kiosk.css"
             xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
 
     <top>
         <HBox alignment="CENTER_LEFT" styleClass="header">
-            <Label styleClass="header-title" text="Maple Leaf Hotel — Self Check-in Kiosk" />
+            <Label styleClass="header-title" text="Maple Leaf Hotel - Self Check-in Kiosk" />
             <Region HBox.hgrow="ALWAYS" />
-            <Label styleClass="header-step" text="Step 5 of 7  ·  Your details" />
+            <Label styleClass="header-step" text="Step 5 of 7 - Your details" />
         </HBox>
     </top>
 
     <center>
-        <VBox alignment="TOP_CENTER" spacing="20.0">
-            <padding>
-                <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
-            </padding>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" pannable="true" vbarPolicy="ALWAYS">
+            <content>
+                <VBox maxWidth="720.0" spacing="16.0">
+                    <padding>
+                        <Insets bottom="40.0" left="32.0" right="32.0" top="28.0" />
+                    </padding>
 
-            <Label styleClass="page-title" text="Your details" />
-            <Label styleClass="subtitle" text="Fields marked * are required." />
+                    <Label styleClass="page-title" text="Guest details" />
+                    <Label styleClass="subtitle" text="Fields marked * are required. Check the phone number for loyalty membership before continuing." />
 
-            <VBox maxWidth="480.0" spacing="6.0" styleClass="card">
-                <GridPane hgap="16.0" vgap="6.0">
-                    <!-- Full name -->
-                    <HBox GridPane.columnIndex="0" GridPane.rowIndex="0">
-                        <Label styleClass="field-label" text="Full name " />
-                        <Label styleClass="required" text="*" />
-                    </HBox>
-                    <TextField fx:id="nameField" prefWidth="280.0" promptText="e.g. Jordan Smith"
-                               GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                    <Label styleClass="error-text" text="Name is required."
-                           GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                    <VBox spacing="12.0" styleClass="card">
+                        <Label styleClass="field-label" text="Loyalty Membership Lookup" />
+                        <GridPane hgap="14.0" vgap="10.0">
+                            <Label styleClass="field-label" text="Phone number" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                            <TextField fx:id="loyaltyPhoneField" prefWidth="260.0" promptText="(555) 123-4567"
+                                       GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                            <HBox spacing="12.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <Button fx:id="checkLoyaltyButton" minWidth="140.0" styleClass="primary-btn" text="Check Loyalty" />
+                                <Button fx:id="joinLoyaltyButton" minWidth="170.0" styleClass="secondary-btn" text="Join Loyalty" />
+                            </HBox>
+                        </GridPane>
+                        <Label fx:id="loyaltyStatusLabel" styleClass="subtitle"
+                               text="If not found, use Join Loyalty to create a member profile and view benefits." />
+                    </VBox>
 
-                    <!-- Phone -->
-                    <HBox GridPane.columnIndex="0" GridPane.rowIndex="2">
-                        <Label styleClass="field-label" text="Phone " />
-                        <Label styleClass="required" text="*" />
-                    </HBox>
-                    <TextField fx:id="phoneField" prefWidth="280.0" promptText="(555) 123-4567"
-                               GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                    <Label styleClass="error-text" text="Enter a valid phone number."
-                           GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                    <VBox spacing="12.0" styleClass="card">
+                        <Label styleClass="field-label" text="Basic Guest Information" />
+                        <GridPane hgap="14.0" vgap="10.0">
+                            <HBox GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <Label styleClass="field-label" text="First name " />
+                                <Label styleClass="required" text="*" />
+                            </HBox>
+                            <TextField fx:id="firstNameField" prefWidth="210.0" promptText="First name"
+                                       GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-                    <!-- Email -->
-                    <HBox GridPane.columnIndex="0" GridPane.rowIndex="4">
-                        <Label styleClass="field-label" text="Email " />
-                        <Label styleClass="required" text="*" />
-                    </HBox>
-                    <TextField fx:id="emailField" prefWidth="280.0" promptText="you@example.com"
-                               GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                    <Label styleClass="error-text" text="Enter a valid email address."
-                           GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                </GridPane>
-            </VBox>
-        </VBox>
+                            <HBox GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                <Label styleClass="field-label" text="Last name " />
+                                <Label styleClass="required" text="*" />
+                            </HBox>
+                            <TextField fx:id="lastNameField" prefWidth="210.0" promptText="Last name"
+                                       GridPane.columnIndex="3" GridPane.rowIndex="0" />
+
+                            <Label styleClass="field-label" text="Date of birth" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                            <DatePicker fx:id="dobPicker" prefWidth="210.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                            <Label styleClass="field-label" text="Age" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                            <TextField fx:id="ageField" prefWidth="210.0" promptText="18+"
+                                       GridPane.columnIndex="3" GridPane.rowIndex="1" />
+
+                            <Label styleClass="field-label" text="ID type" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                            <ComboBox fx:id="idTypeCombo" prefWidth="210.0" promptText="Driver license / Passport"
+                                      GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                            <Label styleClass="field-label" text="ID number" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                            <TextField fx:id="idNumberField" prefWidth="210.0" promptText="ID number"
+                                       GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                        </GridPane>
+                    </VBox>
+
+                    <VBox spacing="12.0" styleClass="card">
+                        <Label styleClass="field-label" text="Contact Details" />
+                        <GridPane hgap="14.0" vgap="10.0">
+                            <HBox GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <Label styleClass="field-label" text="Phone " />
+                                <Label styleClass="required" text="*" />
+                            </HBox>
+                            <TextField fx:id="phoneField" prefWidth="210.0" promptText="(555) 123-4567"
+                                       GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                            <HBox GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                <Label styleClass="field-label" text="Email " />
+                                <Label styleClass="required" text="*" />
+                            </HBox>
+                            <TextField fx:id="emailField" prefWidth="210.0" promptText="you@example.com"
+                                       GridPane.columnIndex="3" GridPane.rowIndex="0" />
+
+                            <Label styleClass="field-label" text="Alt phone" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                            <TextField fx:id="alternatePhoneField" prefWidth="210.0" promptText="Optional"
+                                       GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                            <Label styleClass="field-label" text="Emergency contact" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                            <TextField fx:id="emergencyContactField" prefWidth="210.0" promptText="Name and phone"
+                                       GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                        </GridPane>
+                    </VBox>
+
+                    <VBox spacing="12.0" styleClass="card">
+                        <Label styleClass="field-label" text="Address Details" />
+                        <GridPane hgap="14.0" vgap="10.0">
+                            <HBox GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <Label styleClass="field-label" text="Street address " />
+                                <Label styleClass="required" text="*" />
+                            </HBox>
+                            <TextField fx:id="streetAddressField" prefWidth="210.0" promptText="123 Main Street"
+                                       GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                            <Label styleClass="field-label" text="Unit / Apt" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                            <TextField fx:id="unitNumberField" prefWidth="210.0" promptText="Unit or apartment"
+                                       GridPane.columnIndex="3" GridPane.rowIndex="0" />
+
+                            <HBox GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                <Label styleClass="field-label" text="City " />
+                                <Label styleClass="required" text="*" />
+                            </HBox>
+                            <TextField fx:id="cityField" prefWidth="210.0" promptText="City"
+                                       GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                            <Label styleClass="field-label" text="State / Province" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                            <TextField fx:id="stateProvinceField" prefWidth="210.0" promptText="State or province"
+                                       GridPane.columnIndex="3" GridPane.rowIndex="1" />
+
+                            <HBox GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                <Label styleClass="field-label" text="Postal code " />
+                                <Label styleClass="required" text="*" />
+                            </HBox>
+                            <TextField fx:id="postalCodeField" prefWidth="210.0" promptText="Postal / ZIP code"
+                                       GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                            <Label styleClass="field-label" text="Country" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                            <TextField fx:id="countryField" prefWidth="210.0" promptText="Country"
+                                       GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                        </GridPane>
+                    </VBox>
+                </VBox>
+            </content>
+        </ScrollPane>
     </center>
 
     <bottom>
@@ -72,8 +159,8 @@
             <padding>
                 <Insets bottom="20.0" left="40.0" right="40.0" top="10.0" />
             </padding>
-            <Button styleClass="secondary-btn" text="←  Back" />
-            <Button styleClass="primary-btn" text="Next  →" />
+            <Button minWidth="110.0" styleClass="secondary-btn" text="Back" />
+            <Button minWidth="110.0" styleClass="primary-btn" text="Next" />
         </HBox>
     </bottom>
 </BorderPane>
