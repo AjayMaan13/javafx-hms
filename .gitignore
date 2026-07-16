@@ -53,6 +53,7 @@ desktop.ini
 /exports/
 
 # Embedded/local database files (H2, SQLite, etc.)
+/data/
 *.db
 *.mv.db
 *.trace.db
