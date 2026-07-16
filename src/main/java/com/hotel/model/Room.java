@@ -25,6 +25,9 @@ public class Room {
     @Column(nullable = false)
     private RoomStatus status;
 
+    @Column(name = "room_number", unique = true)
+    private String roomNumber;
+
     public Room() {
     }
 
@@ -36,6 +39,14 @@ public class Room {
 
     public UUID getId() {
         return id;
+    }
+
+    public String getRoomNumber() {
+        return roomNumber;
+    }
+
+    public void setRoomNumber(String roomNumber) {
+        this.roomNumber = roomNumber;
     }
 
     public RoomType getType() {
