@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane fx:controller="com.hotel.controller.kiosk.WelcomeController"
+           xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <VBox alignment="CENTER" spacing="24.0">
+        <padding>
+            <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+        </padding>
+
+        <Label styleClass="page-title" text="Welcome! Let's get you checked in." />
+        <Label styleClass="subtitle" text="Book a room in a few quick steps — no waiting in line." wrapText="true" />
+        <Label text="• Check-out by 11:00 AM" wrapText="true" />
+
+        <Button onAction="#handleStartBooking" styleClass="primary-btn" text="Start Booking  →" />
+    </VBox>
+</StackPane>

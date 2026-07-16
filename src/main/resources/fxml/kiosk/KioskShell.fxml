@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Kiosk shell: header + always-visible Rules & Regulations side nav stay fixed;
+     each step's content is loaded into stepContainer by KioskShellController. -->
+<BorderPane fx:controller="com.hotel.controller.kiosk.KioskShellController"
+            prefHeight="600.0" prefWidth="900.0" stylesheets="@kiosk.css"
+            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" styleClass="header">
+            <Label styleClass="header-title" text="Maple Leaf Hotel — Self Check-in Kiosk" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="stepLabel" styleClass="header-step" text="Welcome" />
+        </HBox>
+    </top>
+
+    <left>
+        <VBox prefWidth="220.0" spacing="10.0" styleClass="side-nav">
+            <Label styleClass="side-nav-title" text="Rules &amp; Regulations" />
+            <Separator />
+            <Label text="• Check-in from 3:00 PM" wrapText="true" />
+            <Label text="• Valid photo ID required" wrapText="true" />
+            <Label text="• No smoking in rooms" wrapText="true" />
+            <Label text="• Pay outstanding balance at front desk" wrapText="true" />
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="stepContainer" />
+    </center>
+</BorderPane>
