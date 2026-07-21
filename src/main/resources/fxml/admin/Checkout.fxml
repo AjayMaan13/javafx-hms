@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- ADMIN SCREEN 5: Checkout. Final bill, settle balance, mark rooms available. -->
+<BorderPane prefHeight="650.0" prefWidth="1000.0" stylesheets="@admin.css"
+            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.hotel.controller.admin.CheckoutController">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" styleClass="header">
+            <Label styleClass="header-title" text="Maple Leaf Hotel — Admin" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label styleClass="header-step" text="Checkout" />
+        </HBox>
+    </top>
+
+    <left>
+        <VBox prefWidth="200.0" spacing="10.0" styleClass="side-nav">
+            <Label styleClass="side-nav-title" text="Admin Menu" />
+            <Separator />
+            <Label styleClass="nav-link" text="Dashboard" />
+            <Label styleClass="nav-link" text="Waitlist" />
+            <Label styleClass="nav-link" text="Feedback" />
+            <Label styleClass="nav-link" text="Reports" />
+            <Label styleClass="nav-link" text="Log Out" />
+        </VBox>
+    </left>
+
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="20.0">
+            <padding>
+                <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+            </padding>
+
+            <Label styleClass="page-title" text="Checkout — Reservation #HMS-2026-00417" />
+            <Label styleClass="subtitle" text="Guest: Jordan Smith · Room 204 (Double) · 2 nights" />
+
+            <VBox maxWidth="420.0" spacing="10.0" styleClass="card">
+                <GridPane hgap="40.0" vgap="10.0">
+                    <Label text="Room + Add-ons" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <Label text="\$274.00" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                    <Label text="Tax (13%)" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <Label text="\$35.62" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                    <Label text="Total Bill" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                    <Label text="\$299.62" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                    <Label text="Already Paid" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                    <Label text="\$150.00" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                </GridPane>
+
+                <Separator />
+
+                <HBox>
+                    <Label styleClass="balance-due" style="-fx-font-size: 18px;" text="Balance Due" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label styleClass="balance-due" style="-fx-font-size: 18px;" text="\$149.62" />
+                </HBox>
+            </VBox>
+
+            <Button styleClass="primary-btn" text="Settle Balance &amp; Check Out" onAction="#checkoutGuest" />
+            <Label fx:id="messageLabel" styleClass="subtitle" text="Checking out marks Room 204 as available." />
+        </VBox>
+    </center>
+</BorderPane>

@@ -12,6 +12,11 @@
         <class>com.hotel.model.Reservation</class>
         <class>com.hotel.model.Addon</class>
         <class>com.hotel.model.Feedback</class>
+        <class>com.hotel.model.AdminUser</class>
+        <class>com.hotel.model.Payment</class>
+        <class>com.hotel.model.Billing</class>
+        <class>com.hotel.model.Waitlist</class>
+        <class>com.hotel.model.AuditLog</class>
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 

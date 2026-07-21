@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="600.0"
+            prefWidth="900.0"
+            stylesheets="@admin.css"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.hotel.controller.admin.LoginController">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" styleClass="header">
+            <Label styleClass="header-title"
+                   text="Maple Leaf Hotel — Admin"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Label styleClass="header-step"
+                   text="Login"/>
+        </HBox>
+    </top>
+
+    <center>
+
+        <StackPane>
+
+            <VBox alignment="CENTER"
+                  maxWidth="360"
+                  spacing="16"
+                  styleClass="card">
+
+                <Label styleClass="page-title"
+                       text="Staff Login"/>
+
+                <Label styleClass="subtitle"
+                       text="Sign in with your admin or manager account."/>
+
+                <VBox spacing="4">
+
+                    <Label styleClass="field-label"
+                           text="Username"/>
+
+                    <TextField fx:id="usernameField"
+                               promptText="Username"/>
+
+                </VBox>
+
+                <VBox spacing="4">
+
+                    <Label styleClass="field-label"
+                           text="Password"/>
+
+                    <PasswordField fx:id="passwordField"
+                                   promptText="Password"/>
+
+                </VBox>
+
+                <Label fx:id="messageLabel"
+                       styleClass="error-text"
+                       text=""/>
+
+                <Button text="Log In"
+                        maxWidth="Infinity"
+                        styleClass="primary-btn"
+                        onAction="#handleLogin"/>
+
+            </VBox>
+
+        </StackPane>
+
+    </center>
+
+</BorderPane>
