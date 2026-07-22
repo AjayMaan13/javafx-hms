@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Admin shell: header + side nav stay fixed in one window; each menu item's
+     content is loaded into contentContainer by AdminShellController — no more
+     screen opening its own separate Stage. -->
+<BorderPane fx:controller="com.hotel.controller.admin.AdminShellController"
+            prefHeight="650.0" prefWidth="1000.0" stylesheets="@admin.css"
+            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" styleClass="header">
+            <Label styleClass="header-title" text="Maple Leaf Hotel — Admin" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="screenLabel" styleClass="header-step" text="Dashboard" />
+        </HBox>
+    </top>
+
+    <left>
+        <VBox prefWidth="200.0" spacing="10.0" styleClass="side-nav">
+            <Label styleClass="side-nav-title" text="Admin Menu" />
+            <Separator />
+            <Button maxWidth="Infinity" onAction="#showDashboard" text="Dashboard" />
+            <Button maxWidth="Infinity" onAction="#showReservations" text="Reservations" />
+            <Button maxWidth="Infinity" onAction="#showPayments" text="Payments" />
+            <Button maxWidth="Infinity" onAction="#showCheckout" text="Checkout" />
+            <Button maxWidth="Infinity" onAction="#showWaitlist" text="Waitlist" />
+            <Button maxWidth="Infinity" onAction="#showFeedback" text="Feedback" />
+            <Button maxWidth="Infinity" onAction="#showReports" text="Reports" />
+            <Region VBox.vgrow="ALWAYS" />
+            <Button maxWidth="Infinity" onAction="#handleLogout" text="Logout" />
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="contentContainer" />
+    </center>
+</BorderPane>

@@ -3,12 +3,10 @@ package com.hotel.controller.admin;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.stage.Stage;
 
 public class ReservationDetailController {
 
@@ -56,12 +54,6 @@ public class ReservationDetailController {
     private void addRoom() {
         roomsTable.getItems().add(new String[]{"301", "DELUXE", "$220.00", "2"});
         messageLabel.setText("Room added to the reservation view.");
-    }
-
-    @FXML
-    private void closeWindow(javafx.event.ActionEvent event) {
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.close();
     }
 
     @SuppressWarnings("unchecked")

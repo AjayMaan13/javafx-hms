@@ -84,6 +84,13 @@
                             <mainClass>com.hotel.app.Main</mainClass>
                         </configuration>
                     </execution>
+                    <execution>
+                        <!-- Run the admin app with: mvn javafx:run@admin-cli -->
+                        <id>admin-cli</id>
+                        <configuration>
+                            <mainClass>com.hotel.app.AdminMain</mainClass>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

@@ -5,81 +5,54 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!-- ADMIN SCREEN 8: Reports. Revenue / occupancy / activity-log tables,
-     exportable to CSV / PDF / TXT (no charts — table only, per the brief). -->
-<BorderPane prefHeight="650.0" prefWidth="1000.0" stylesheets="@admin.css"
-            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.hotel.controller.admin.ReportsController">
+<!-- ADMIN SCREEN 8 content only: Reports. Header/side-nav now live once in
+     AdminShell.fxml. Revenue / occupancy / activity-log tables, exportable to
+     CSV / PDF / TXT (no charts — table only, per the brief). -->
+<VBox spacing="16.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.hotel.controller.admin.ReportsController">
+    <padding>
+        <Insets bottom="20.0" left="24.0" right="24.0" top="20.0" />
+    </padding>
 
-    <top>
-        <HBox alignment="CENTER_LEFT" styleClass="header">
-            <Label styleClass="header-title" text="Maple Leaf Hotel — Admin" />
-            <Region HBox.hgrow="ALWAYS" />
-            <Label styleClass="header-step" text="Reports" />
-        </HBox>
-    </top>
+    <Label styleClass="page-title" text="Reports" />
 
-    <left>
-        <VBox prefWidth="200.0" spacing="10.0" styleClass="side-nav">
-            <Label styleClass="side-nav-title" text="Admin Menu" />
-            <Separator />
-            <Label styleClass="nav-link" text="Dashboard" />
-            <Label styleClass="nav-link" text="Waitlist" />
-            <Label styleClass="nav-link" text="Feedback" />
-            <Label styleClass="nav-link" text="Reports" />
-            <Label styleClass="nav-link" text="Log Out" />
+    <!-- Report selector -->
+    <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="card">
+        <VBox spacing="2.0">
+            <Label styleClass="field-label" text="Report type" />
+            <ComboBox fx:id="reportTypeComboBox" prefWidth="200.0" promptText="Revenue / Occupancy / Activity Log" />
         </VBox>
-    </left>
-
-    <center>
-        <VBox spacing="16.0">
-            <padding>
-                <Insets bottom="20.0" left="24.0" right="24.0" top="20.0" />
-            </padding>
-
-            <Label styleClass="page-title" text="Reports" />
-
-            <!-- Report selector -->
-            <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="card">
-                <VBox spacing="2.0">
-                    <Label styleClass="field-label" text="Report type" />
-                    <ComboBox fx:id="reportTypeComboBox" prefWidth="200.0" promptText="Revenue / Occupancy / Activity Log" />
-                </VBox>
-                <VBox spacing="2.0">
-                    <Label styleClass="field-label" text="From" />
-                    <DatePicker fx:id="fromDatePicker" prefWidth="140.0" />
-                </VBox>
-                <VBox spacing="2.0">
-                    <Label styleClass="field-label" text="To" />
-                    <DatePicker fx:id="toDatePicker" prefWidth="140.0" />
-                </VBox>
-                <Region HBox.hgrow="ALWAYS" />
-                <Button styleClass="primary-btn" text="Generate" onAction="#generateDailyReport" />
-            </HBox>
-
-            <!-- Tabular report output (no charts, per brief) -->
-            <TableView fx:id="reportTable" prefHeight="300.0" VBox.vgrow="ALWAYS">
-                <columns>
-                    <TableColumn prefWidth="140.0" text="Date" />
-                    <TableColumn prefWidth="180.0" text="Description" />
-                    <TableColumn prefWidth="120.0" text="Amount" />
-                    <TableColumn prefWidth="120.0" text="Rooms Occupied" />
-                </columns>
-            </TableView>
-
-            <HBox alignment="CENTER_RIGHT" spacing="12.0">
-                <Button styleClass="secondary-btn" text="Export CSV" onAction="#exportCsv" />
-                <Button styleClass="secondary-btn" text="Export PDF" onAction="#exportPdf" />
-                <Button styleClass="secondary-btn" text="Export TXT" onAction="#exportTxt" />
-            </HBox>
+        <VBox spacing="2.0">
+            <Label styleClass="field-label" text="From" />
+            <DatePicker fx:id="fromDatePicker" prefWidth="140.0" />
         </VBox>
-    </center>
-</BorderPane>
+        <VBox spacing="2.0">
+            <Label styleClass="field-label" text="To" />
+            <DatePicker fx:id="toDatePicker" prefWidth="140.0" />
+        </VBox>
+        <Region HBox.hgrow="ALWAYS" />
+        <Button styleClass="primary-btn" text="Generate" onAction="#generateDailyReport" />
+    </HBox>
+
+    <!-- Tabular report output (no charts, per brief) -->
+    <TableView fx:id="reportTable" prefHeight="300.0" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn prefWidth="140.0" text="Date" />
+            <TableColumn prefWidth="180.0" text="Description" />
+            <TableColumn prefWidth="120.0" text="Amount" />
+            <TableColumn prefWidth="120.0" text="Rooms Occupied" />
+        </columns>
+    </TableView>
+
+    <HBox alignment="CENTER_RIGHT" spacing="12.0">
+        <Button styleClass="secondary-btn" text="Export CSV" onAction="#exportCsv" />
+        <Button styleClass="secondary-btn" text="Export PDF" onAction="#exportPdf" />
+        <Button styleClass="secondary-btn" text="Export TXT" onAction="#exportTxt" />
+    </HBox>
+</VBox>

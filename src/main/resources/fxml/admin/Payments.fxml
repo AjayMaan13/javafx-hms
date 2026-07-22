@@ -7,49 +7,23 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!-- ADMIN SCREEN 4: Payments. Cash/card/loyalty, deposits, partial payments,
-     refunds; paid vs outstanding balance. -->
-<BorderPane prefHeight="650.0" prefWidth="1000.0" stylesheets="@admin.css"
-            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<!-- ADMIN SCREEN 4 content only: Payments. Header/side-nav now live once in
+     AdminShell.fxml. Cash/card/loyalty, deposits, partial payments, refunds;
+     paid vs outstanding balance. -->
+<ScrollPane fitToWidth="true" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.hotel.controller.admin.PaymentsController">
-
-    <top>
-        <HBox alignment="CENTER_LEFT" styleClass="header">
-            <Label styleClass="header-title" text="Maple Leaf Hotel - Admin" />
-            <Region HBox.hgrow="ALWAYS" />
-            <Label styleClass="header-step" text="Payments" />
-        </HBox>
-    </top>
-
-    <left>
-        <VBox prefWidth="200.0" spacing="10.0" styleClass="side-nav">
-            <Label styleClass="side-nav-title" text="Admin Menu" />
-            <Separator />
-            <Label styleClass="nav-link" text="Dashboard" />
-            <Label styleClass="nav-link" text="Waitlist" />
-            <Label styleClass="nav-link" text="Feedback" />
-            <Label styleClass="nav-link" text="Reports" />
-            <Label styleClass="nav-link" text="Log Out" />
-        </VBox>
-    </left>
-
-    <center>
-        <ScrollPane fitToWidth="true">
-            <content>
-                <VBox spacing="16.0">
-                    <padding>
-                        <Insets bottom="20.0" left="24.0" right="24.0" top="20.0" />
-                    </padding>
+    <content>
+        <VBox spacing="16.0">
+            <padding>
+                <Insets bottom="20.0" left="24.0" right="24.0" top="20.0" />
+            </padding>
 
             <Label styleClass="page-title" text="Payments - Reservation #HMS-2026-00417" />
 
@@ -147,8 +121,6 @@
                     <TableColumn prefWidth="220.0" text="Approval / Cap Status" />
                 </columns>
             </TableView>
-                </VBox>
-            </content>
-        </ScrollPane>
-    </center>
-</BorderPane>
+        </VBox>
+    </content>
+</ScrollPane>

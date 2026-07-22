@@ -4,21 +4,14 @@ import com.hotel.model.Reservation;
 import com.hotel.model.Guest;
 import com.hotel.model.enums.ReservationStatus;
 import com.hotel.repository.ReservationRepository;
-import javafx.event.ActionEvent;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Label;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.time.LocalDate;
 
 public class DashboardController {
@@ -43,89 +36,6 @@ public class DashboardController {
             reservations.add(createDemoReservation());
         }
         reservationTable.setItems(reservations);
-    }
-
-    @FXML
-    private void openReservations(ActionEvent event) {
-        openWindow("/fxml/admin/ReservationDetail.fxml",
-                "Reservation Details");
-    }
-
-    @FXML
-    private void openPayments(ActionEvent event) {
-        openWindow("/fxml/admin/Payments.fxml",
-                "Payments");
-    }
-
-    @FXML
-    private void openCheckout(ActionEvent event) {
-        openWindow("/fxml/admin/Checkout.fxml",
-                "Checkout");
-    }
-
-    @FXML
-    private void openWaitlist(ActionEvent event) {
-        openWindow("/fxml/admin/Waitlist.fxml",
-                "Waitlist");
-    }
-
-    @FXML
-    private void openFeedback(ActionEvent event) {
-        openWindow("/fxml/admin/FeedbackView.fxml",
-                "Feedback");
-    }
-
-    @FXML
-    private void openReports(ActionEvent event) {
-        openWindow("/fxml/admin/Reports.fxml",
-                "Reports");
-    }
-
-    @FXML
-    private void logout(ActionEvent event) {
-
-        Stage dashboardStage =
-                (Stage) ((javafx.scene.Node) event.getSource())
-                        .getScene()
-                        .getWindow();
-
-        dashboardStage.close();
-
-        try {
-
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/fxml/admin/Login.fxml"));
-
-            Parent root = loader.load();
-
-            Stage loginStage = new Stage();
-            loginStage.setTitle("Admin Login");
-            loginStage.setScene(new Scene(root));
-            loginStage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void openWindow(String fxmlFile, String title) {
-
-        try {
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
-
-            Parent root = loader.load();
-
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle(title);
-            stage.setScene(new Scene(root));
-
-            stage.showAndWait();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @SuppressWarnings("unchecked")

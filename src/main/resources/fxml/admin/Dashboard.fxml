@@ -4,153 +4,87 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="650.0"
-            prefWidth="1000.0"
-            stylesheets="@admin.css"
-            xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.hotel.controller.admin.DashboardController">
+<!-- Dashboard content only — header/side-nav now live once in AdminShell.fxml. -->
+<VBox spacing="16"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.hotel.controller.admin.DashboardController">
 
-    <top>
-        <HBox alignment="CENTER_LEFT" styleClass="header">
-            <Label styleClass="header-title"
-                   text="Maple Leaf Hotel — Admin"/>
+    <padding>
+        <Insets top="20"
+                left="24"
+                right="24"
+                bottom="20"/>
+    </padding>
 
-            <Region HBox.hgrow="ALWAYS"/>
+    <Label styleClass="page-title"
+           text="Guests &amp; Reservations"/>
 
-            <Label styleClass="header-step"
-                   text="Dashboard"/>
-        </HBox>
-    </top>
+    <HBox spacing="12"
+          alignment="CENTER_LEFT"
+          styleClass="card">
 
-    <left>
-
-        <VBox prefWidth="200"
-              spacing="10"
-              styleClass="side-nav">
-
-            <Label styleClass="side-nav-title"
-                   text="Admin Menu"/>
-
-            <Separator/>
-
-            <Button text="Reservations"
-                    maxWidth="Infinity"
-                    onAction="#openReservations"/>
-
-            <Button text="Payments"
-                    maxWidth="Infinity"
-                    onAction="#openPayments"/>
-
-            <Button text="Checkout"
-                    maxWidth="Infinity"
-                    onAction="#openCheckout"/>
-
-            <Button text="Waitlist"
-                    maxWidth="Infinity"
-                    onAction="#openWaitlist"/>
-
-            <Button text="Feedback"
-                    maxWidth="Infinity"
-                    onAction="#openFeedback"/>
-
-            <Button text="Reports"
-                    maxWidth="Infinity"
-                    onAction="#openReports"/>
-
-            <Region VBox.vgrow="ALWAYS"/>
-
-            <Button text="Logout"
-                    maxWidth="Infinity"
-                    onAction="#logout"/>
-
+        <VBox spacing="2">
+            <Label text="Name"/>
+            <TextField promptText="Guest name"/>
         </VBox>
 
-    </left>
-
-    <center>
-
-        <VBox spacing="16">
-
-            <padding>
-                <Insets top="20"
-                        left="24"
-                        right="24"
-                        bottom="20"/>
-            </padding>
-
-            <Label styleClass="page-title"
-                   text="Guests &amp; Reservations"/>
-
-            <HBox spacing="12"
-                  alignment="CENTER_LEFT"
-                  styleClass="card">
-
-                <VBox spacing="2">
-                    <Label text="Name"/>
-                    <TextField promptText="Guest name"/>
-                </VBox>
-
-                <VBox spacing="2">
-                    <Label text="Phone"/>
-                    <TextField promptText="Phone"/>
-                </VBox>
-
-                <VBox spacing="2">
-                    <Label text="From"/>
-                    <DatePicker/>
-                </VBox>
-
-                <VBox spacing="2">
-                    <Label text="To"/>
-                    <DatePicker/>
-                </VBox>
-
-                <VBox spacing="2">
-                    <Label text="Status"/>
-                    <ComboBox promptText="Any Status"/>
-                </VBox>
-
-                <Region HBox.hgrow="ALWAYS"/>
-
-                <Button text="Search"/>
-
-            </HBox>
-
-            <TableView fx:id="reservationTable"
-                       VBox.vgrow="ALWAYS">
-
-                <columns>
-
-                    <TableColumn text="Guest"
-                                 prefWidth="150"/>
-
-                    <TableColumn text="Phone"
-                                 prefWidth="120"/>
-
-                    <TableColumn text="Check In"
-                                 prefWidth="100"/>
-
-                    <TableColumn text="Check Out"
-                                 prefWidth="100"/>
-
-                    <TableColumn text="Status"
-                                 prefWidth="120"/>
-
-                    <TableColumn text="Rooms"
-                                 prefWidth="120"/>
-
-                    <TableColumn text="Balance"
-                                 prefWidth="100"/>
-
-                </columns>
-
-            </TableView>
-
-            <Pagination pageCount="1"/>
-
+        <VBox spacing="2">
+            <Label text="Phone"/>
+            <TextField promptText="Phone"/>
         </VBox>
 
-    </center>
+        <VBox spacing="2">
+            <Label text="From"/>
+            <DatePicker/>
+        </VBox>
 
-</BorderPane>
+        <VBox spacing="2">
+            <Label text="To"/>
+            <DatePicker/>
+        </VBox>
+
+        <VBox spacing="2">
+            <Label text="Status"/>
+            <ComboBox promptText="Any Status"/>
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button text="Search"/>
+
+    </HBox>
+
+    <TableView fx:id="reservationTable"
+               VBox.vgrow="ALWAYS">
+
+        <columns>
+
+            <TableColumn text="Guest"
+                         prefWidth="150"/>
+
+            <TableColumn text="Phone"
+                         prefWidth="120"/>
+
+            <TableColumn text="Check In"
+                         prefWidth="100"/>
+
+            <TableColumn text="Check Out"
+                         prefWidth="100"/>
+
+            <TableColumn text="Status"
+                         prefWidth="120"/>
+
+            <TableColumn text="Rooms"
+                         prefWidth="120"/>
+
+            <TableColumn text="Balance"
+                         prefWidth="100"/>
+
+        </columns>
+
+    </TableView>
+
+    <Pagination pageCount="1"/>
+
+</VBox>

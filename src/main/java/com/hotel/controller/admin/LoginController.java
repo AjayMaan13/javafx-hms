@@ -52,13 +52,13 @@ public class LoginController {
             try {
 
                 FXMLLoader loader = new FXMLLoader(
-                        getClass().getResource("/fxml/admin/Dashboard.fxml")
+                        getClass().getResource("/fxml/admin/AdminShell.fxml")
                 );
 
                 Parent root = loader.load();
 
                 Stage stage = new Stage();
-                stage.setTitle("Admin Dashboard");
+                stage.setTitle("Maple Leaf Hotel — Admin");
                 stage.setScene(new Scene(root));
                 stage.show();
 
@@ -69,7 +69,7 @@ public class LoginController {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                messageLabel.setText("Unable to open dashboard.");
+                messageLabel.setText("Unable to open admin dashboard.");
             }
 
         } else {
