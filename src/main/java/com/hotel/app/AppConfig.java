@@ -5,7 +5,7 @@ import com.hotel.repository.AdminUserRepository;
 import com.hotel.repository.GuestRepository;
 import com.hotel.repository.ReservationRepository;
 import com.hotel.repository.RoomRepository;
-import com.hotel.service.AuthService;
+import com.hotel.security.AuthService;
 import com.hotel.service.PricingService;
 import com.hotel.service.ReservationService;
 import com.hotel.service.pricing.PricingStrategy;

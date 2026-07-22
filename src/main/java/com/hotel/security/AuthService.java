@@ -1,4 +1,4 @@
-package com.hotel.service;
+package com.hotel.security;
 
 import com.hotel.model.AdminUser;
 import com.hotel.repository.AdminUserRepository;

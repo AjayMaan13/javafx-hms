@@ -2,7 +2,7 @@ package com.hotel.controller.admin;
 
 import com.hotel.model.AdminUser;
 import com.hotel.repository.AdminUserRepository;
-import com.hotel.service.AuthService;
+import com.hotel.security.AuthService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
