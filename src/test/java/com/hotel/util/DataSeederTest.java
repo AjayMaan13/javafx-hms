@@ -1,6 +1,7 @@
 package com.hotel.util;
 
 import com.hotel.repository.AddonRepository;
+import com.hotel.repository.AdminUserRepository;
 import com.hotel.repository.RoomRepository;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,8 @@ class DataSeederTest {
     void seedsRoomsAndAddonsOnlyWhenEmptyAndNeverDuplicatesOnRepeatCalls() {
         RoomRepository roomRepository = new RoomRepository();
         AddonRepository addonRepository = new AddonRepository();
-        DataSeeder seeder = new DataSeeder(roomRepository, addonRepository);
+        AdminUserRepository adminUserRepository = new AdminUserRepository();
+        DataSeeder seeder = new DataSeeder(roomRepository, addonRepository, adminUserRepository);
 
         int roomCountBefore = roomRepository.findAll().size();
         int addonCountBefore = addonRepository.findAll().size();
