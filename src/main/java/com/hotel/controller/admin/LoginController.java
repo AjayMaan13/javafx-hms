@@ -2,7 +2,11 @@ package com.hotel.controller.admin;
 
 import com.hotel.model.AdminUser;
 import com.hotel.repository.AdminUserRepository;
+import com.hotel.repository.AuditLogRepository;
 import com.hotel.security.AuthService;
+import com.hotel.security.BCryptPasswordHasher;
+import com.hotel.service.ActivityLogService;
+import com.hotel.util.LoggerService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -29,9 +33,13 @@ public class LoginController {
     private Label messageLabel;
 
     private final AuthService authService;
+    private final ActivityLogService activityLogService;
+    private final LoggerService loggerService;
 
     public LoginController() {
-        authService = new AuthService(new AdminUserRepository());
+        authService = new AuthService(new AdminUserRepository(), new BCryptPasswordHasher());
+        activityLogService = new ActivityLogService(new AuditLogRepository(), LoggerService.getInstance());
+        loggerService = LoggerService.getInstance();
     }
 
     @FXML
@@ -48,6 +56,9 @@ public class LoginController {
         Optional<AdminUser> admin = authService.login(username, password);
 
         if (admin.isPresent()) {
+
+            activityLogService.record(admin.get(), "LOGIN_SUCCESS", "AdminUser",
+                    admin.get().getId().toString(), "Admin logged in.");
 
             try {
 
@@ -73,6 +84,10 @@ public class LoginController {
             }
 
         } else {
+
+            // No valid AdminUser to attach to an audit row, so failed attempts are
+            // logged to the file log only, not persisted to the audit_log table.
+            loggerService.warning("Failed login attempt for username=" + username);
 
             messageLabel.setText("Invalid username or password.");
 

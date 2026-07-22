@@ -8,14 +8,15 @@ import java.util.Optional;
 public class AuthService {
 
     private final AdminUserRepository adminUserRepository;
+    private final BCryptPasswordHasher passwordHasher;
 
-    public AuthService(AdminUserRepository adminUserRepository) {
+    public AuthService(AdminUserRepository adminUserRepository, BCryptPasswordHasher passwordHasher) {
         this.adminUserRepository = adminUserRepository;
+        this.passwordHasher = passwordHasher;
     }
 
     public Optional<AdminUser> login(String username, String password) {
-        // TODO Final: replace plaintext comparison with BCrypt.checkpw(password, hash).
         return adminUserRepository.findByUsername(username)
-                .filter(admin -> admin.getPasswordHash().equals(password));
+                .filter(admin -> passwordHasher.verify(password, admin.getPasswordHash()));
     }
 }

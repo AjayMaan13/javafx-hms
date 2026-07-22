@@ -8,6 +8,7 @@ import com.hotel.model.enums.RoomType;
 import com.hotel.repository.AddonRepository;
 import com.hotel.repository.AdminUserRepository;
 import com.hotel.repository.RoomRepository;
+import com.hotel.security.BCryptPasswordHasher;
 import com.hotel.service.RoomFactory;
 
 public class DataSeeder {
@@ -15,12 +16,14 @@ public class DataSeeder {
     private final RoomRepository roomRepository;
     private final AddonRepository addonRepository;
     private final AdminUserRepository adminUserRepository;
+    private final BCryptPasswordHasher passwordHasher;
 
     public DataSeeder(RoomRepository roomRepository, AddonRepository addonRepository,
-                      AdminUserRepository adminUserRepository) {
+                      AdminUserRepository adminUserRepository, BCryptPasswordHasher passwordHasher) {
         this.roomRepository = roomRepository;
         this.addonRepository = addonRepository;
         this.adminUserRepository = adminUserRepository;
+        this.passwordHasher = passwordHasher;
     }
 
     public void seedIfEmpty() {
@@ -39,9 +42,8 @@ public class DataSeeder {
         }
 
         if (adminUserRepository.findAll().isEmpty()) {
-            // TODO Final: store BCrypt hashes instead of plaintext passwords.
-            adminUserRepository.save(new AdminUser("admin", "admin123", Role.ADMIN));
-            adminUserRepository.save(new AdminUser("manager", "manager123", Role.MANAGER));
+            adminUserRepository.save(new AdminUser("admin", passwordHasher.hash("admin123"), Role.ADMIN));
+            adminUserRepository.save(new AdminUser("manager", passwordHasher.hash("manager123"), Role.MANAGER));
         }
     }
 

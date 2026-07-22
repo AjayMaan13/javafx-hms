@@ -36,7 +36,8 @@ class ReservationServiceTest {
         RoomRepository roomRepository = new RoomRepository();
         ReservationRepository reservationRepository = new ReservationRepository();
         AddonRepository addonRepository = new AddonRepository();
-        new DataSeeder(roomRepository, addonRepository, new com.hotel.repository.AdminUserRepository()).seedIfEmpty();
+        new DataSeeder(roomRepository, addonRepository, new com.hotel.repository.AdminUserRepository(),
+                new com.hotel.security.BCryptPasswordHasher()).seedIfEmpty();
 
         PricingService pricingService = new PricingService(new StandardPricingStrategy());
         return new ReservationService(guestRepository, roomRepository, reservationRepository, addonRepository,

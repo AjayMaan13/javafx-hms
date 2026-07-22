@@ -3,6 +3,7 @@ package com.hotel.util;
 import com.hotel.repository.AddonRepository;
 import com.hotel.repository.AdminUserRepository;
 import com.hotel.repository.RoomRepository;
+import com.hotel.security.BCryptPasswordHasher;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,7 +15,8 @@ class DataSeederTest {
         RoomRepository roomRepository = new RoomRepository();
         AddonRepository addonRepository = new AddonRepository();
         AdminUserRepository adminUserRepository = new AdminUserRepository();
-        DataSeeder seeder = new DataSeeder(roomRepository, addonRepository, adminUserRepository);
+        DataSeeder seeder = new DataSeeder(roomRepository, addonRepository, adminUserRepository,
+                new BCryptPasswordHasher());
 
         int roomCountBefore = roomRepository.findAll().size();
         int addonCountBefore = addonRepository.findAll().size();

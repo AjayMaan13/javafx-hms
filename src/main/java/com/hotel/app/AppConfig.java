@@ -2,15 +2,19 @@ package com.hotel.app;
 
 import com.hotel.repository.AddonRepository;
 import com.hotel.repository.AdminUserRepository;
+import com.hotel.repository.AuditLogRepository;
 import com.hotel.repository.GuestRepository;
 import com.hotel.repository.ReservationRepository;
 import com.hotel.repository.RoomRepository;
 import com.hotel.security.AuthService;
+import com.hotel.security.BCryptPasswordHasher;
+import com.hotel.service.ActivityLogService;
 import com.hotel.service.PricingService;
 import com.hotel.service.ReservationService;
 import com.hotel.service.pricing.PricingStrategy;
 import com.hotel.service.pricing.StandardPricingStrategy;
 import com.hotel.util.DataSeeder;
+import com.hotel.util.LoggerService;
 
 public class AppConfig {
 
@@ -22,13 +26,19 @@ public class AppConfig {
     private final ReservationRepository reservationRepository = new ReservationRepository();
     private final AddonRepository addonRepository = new AddonRepository();
     private final AdminUserRepository adminUserRepository = new AdminUserRepository();
+    private final AuditLogRepository auditLogRepository = new AuditLogRepository();
+
+    private final BCryptPasswordHasher passwordHasher = new BCryptPasswordHasher();
+    private final LoggerService loggerService = LoggerService.getInstance();
 
     private final PricingService pricingService = new PricingService(DEFAULT_PRICING_STRATEGY);
     private final ReservationService reservationService = new ReservationService(
             guestRepository, roomRepository, reservationRepository, addonRepository, pricingService);
-    private final AuthService authService = new AuthService(adminUserRepository);
+    private final AuthService authService = new AuthService(adminUserRepository, passwordHasher);
+    private final ActivityLogService activityLogService = new ActivityLogService(auditLogRepository, loggerService);
 
-    private final DataSeeder dataSeeder = new DataSeeder(roomRepository, addonRepository, adminUserRepository);
+    private final DataSeeder dataSeeder = new DataSeeder(roomRepository, addonRepository, adminUserRepository,
+            passwordHasher);
 
     public void seedData() {
         dataSeeder.seedIfEmpty();
@@ -52,5 +62,13 @@ public class AppConfig {
 
     public AdminUserRepository getAdminUserRepository() {
         return adminUserRepository;
+    }
+
+    public ActivityLogService getActivityLogService() {
+        return activityLogService;
+    }
+
+    public LoggerService getLoggerService() {
+        return loggerService;
     }
 }
