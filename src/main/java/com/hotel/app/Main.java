@@ -1,11 +1,7 @@
 package com.hotel.app;
 
-import com.hotel.controller.kiosk.KioskShellController;
 import com.hotel.util.PersistenceManager;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -15,14 +11,10 @@ public class Main extends Application {
         AppConfig appConfig = new AppConfig();
         appConfig.seedData();
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/kiosk/KioskShell.fxml"));
-        Parent root = loader.load();
-
-        KioskShellController shell = loader.getController();
-        shell.setAppConfig(appConfig);
-
-        primaryStage.setTitle("Maple Leaf Hotel — Kiosk");
-        primaryStage.setScene(new Scene(root));
+        // One window, one composition root. The router swaps between the kiosk and admin
+        // views inside this single Stage — no more separate windows or launchers.
+        SceneRouter router = new SceneRouter(primaryStage, appConfig);
+        router.showKiosk();
         primaryStage.show();
     }
 

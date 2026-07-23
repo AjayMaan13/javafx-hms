@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.BorderPane?>
@@ -11,14 +12,15 @@
 <!-- Kiosk shell: header + always-visible Rules & Regulations side nav stay fixed;
      each step's content is loaded into stepContainer by KioskShellController. -->
 <BorderPane fx:controller="com.hotel.controller.kiosk.KioskShellController"
-            prefHeight="600.0" prefWidth="900.0" stylesheets="@kiosk.css"
+            prefHeight="600.0" prefWidth="900.0" stylesheets="@../app.css"
             xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
 
     <top>
-        <HBox alignment="CENTER_LEFT" styleClass="header">
-            <Label styleClass="header-title" text="Maple Leaf Hotel — Self Check-in Kiosk" />
+        <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="header">
+            <Label styleClass="header-title" text="🍁 Maple Leaf Hotel — Self Check-in Kiosk" />
             <Region HBox.hgrow="ALWAYS" />
             <Label fx:id="stepLabel" styleClass="header-step" text="Welcome" />
+            <Button onAction="#handleStaffLogin" styleClass="header-btn" text="Staff Login" />
         </HBox>
     </top>
 

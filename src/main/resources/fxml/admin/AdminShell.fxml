@@ -13,12 +13,12 @@
      content is loaded into contentContainer by AdminShellController — no more
      screen opening its own separate Stage. -->
 <BorderPane fx:controller="com.hotel.controller.admin.AdminShellController"
-            prefHeight="650.0" prefWidth="1000.0" stylesheets="@admin.css"
+            prefHeight="650.0" prefWidth="1000.0" stylesheets="@../app.css"
             xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
 
     <top>
         <HBox alignment="CENTER_LEFT" styleClass="header">
-            <Label styleClass="header-title" text="Maple Leaf Hotel — Admin" />
+            <Label styleClass="header-title" text="🍁 Maple Leaf Hotel — Admin" />
             <Region HBox.hgrow="ALWAYS" />
             <Label fx:id="screenLabel" styleClass="header-step" text="Dashboard" />
         </HBox>

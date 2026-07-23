@@ -13,7 +13,7 @@
 
 <BorderPane prefHeight="600.0"
             prefWidth="900.0"
-            stylesheets="@admin.css"
+            stylesheets="@../app.css"
             xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.hotel.controller.admin.LoginController">
@@ -21,7 +21,7 @@
     <top>
         <HBox alignment="CENTER_LEFT" styleClass="header">
             <Label styleClass="header-title"
-                   text="Maple Leaf Hotel — Admin"/>
+                   text="🍁 Maple Leaf Hotel — Admin"/>
 
             <Region HBox.hgrow="ALWAYS"/>
 

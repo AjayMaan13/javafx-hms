@@ -39,7 +39,7 @@ import com.hotel.util.TxtExporter;
  * The single composition root. Nothing outside this class (and tests) should ever call
  * `new XxxService(...)` or `new XxxRepository(...)` — every screen reaches its
  * dependencies through AdminShellController.getAppConfig() / KioskShellController.getAppConfig(),
- * both of which are handed the one AppConfig instance built in Main/AdminMain.
+ * both of which are handed the one AppConfig instance built in Main and shared via SceneRouter.
  */
 public class AppConfig {
 

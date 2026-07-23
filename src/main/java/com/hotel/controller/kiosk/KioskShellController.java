@@ -1,6 +1,7 @@
 package com.hotel.controller.kiosk;
 
 import com.hotel.app.AppConfig;
+import com.hotel.app.SceneRouter;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -43,13 +44,24 @@ public class KioskShellController {
 
     private final BookingDraft draft = new BookingDraft();
     private AppConfig appConfig;
+    private SceneRouter router;
     private int currentIndex = 0;
     private UUID lastReservationId;
     private String lastLoyaltyNumber;
 
+    public void setRouter(SceneRouter router) {
+        this.router = router;
+    }
+
     public void setAppConfig(AppConfig appConfig) {
         this.appConfig = appConfig;
         showStep(0);
+    }
+
+    /** Header "Staff Login" button → hand the single window over to the admin login. */
+    @FXML
+    private void handleStaffLogin() {
+        router.showAdminLogin();
     }
 
     public AppConfig getAppConfig() {

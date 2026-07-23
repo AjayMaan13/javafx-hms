@@ -1,15 +1,14 @@
 package com.hotel.controller.admin;
 
 import com.hotel.app.AppConfig;
+import com.hotel.app.SceneRouter;
 import com.hotel.model.AdminUser;
 import com.hotel.model.Reservation;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Map;
@@ -45,8 +44,13 @@ public class AdminShellController {
     private StackPane contentContainer;
 
     private AppConfig appConfig;
+    private SceneRouter router;
     private AdminUser currentAdmin;
     private Reservation selectedReservation;
+
+    public void setRouter(SceneRouter router) {
+        this.router = router;
+    }
 
     /**
      * Called by LoginController right after this shell loads. Deliberately NOT done in an
@@ -145,24 +149,9 @@ public class AdminShellController {
 
     @FXML
     private void handleLogout() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/admin/Login.fxml"));
-            Parent root = loader.load();
-
-            // Same AppConfig instance carries forward across logout/re-login — one
-            // composition root for the whole app run, not a fresh one per session.
-            LoginController loginController = loader.getController();
-            loginController.setAppConfig(appConfig);
-
-            Stage loginStage = new Stage();
-            loginStage.setTitle("Maple Leaf Hotel — Admin");
-            loginStage.setScene(new Scene(root));
-            loginStage.show();
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to load Login screen", e);
-        }
-
-        ((Stage) contentContainer.getScene().getWindow()).close();
+        // Return the single window to the public kiosk — no new Stage, no closing the window.
+        // Staff can log back in from the kiosk's "Staff Login" button.
+        router.showKiosk();
     }
 
     private void navigateTo(String key) {
