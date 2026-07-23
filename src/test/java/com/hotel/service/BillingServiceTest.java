@@ -1,17 +1,22 @@
 package com.hotel.service;
 
+import com.hotel.events.RoomAvailabilityPublisher;
+import com.hotel.events.WaitlistSubscriber;
 import com.hotel.model.Billing;
 import com.hotel.model.Guest;
 import com.hotel.model.Reservation;
 import com.hotel.model.Room;
+import com.hotel.model.Waitlist;
 import com.hotel.model.enums.PaymentMethod;
 import com.hotel.model.enums.ReservationStatus;
 import com.hotel.model.enums.RoomStatus;
+import com.hotel.model.enums.RoomType;
 import com.hotel.repository.BillingRepository;
 import com.hotel.repository.GuestRepository;
 import com.hotel.repository.PaymentRepository;
 import com.hotel.repository.ReservationRepository;
 import com.hotel.repository.RoomRepository;
+import com.hotel.repository.WaitlistRepository;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -32,12 +37,20 @@ class BillingServiceTest {
     private final ReservationRepository reservationRepository = new ReservationRepository();
     private final BillingRepository billingRepository = new BillingRepository();
     private final PaymentRepository paymentRepository = new PaymentRepository();
+    private final WaitlistRepository waitlistRepository = new WaitlistRepository();
 
     private final LoyaltyService loyaltyService = new LoyaltyService(
             new com.hotel.repository.LoyaltyAccountRepository(), new com.hotel.repository.LoyaltyConfigRepository(),
             new com.hotel.repository.LoyaltyTransactionRepository(), billingRepository);
+
+    private final RoomAvailabilityPublisher roomAvailabilityPublisher = new RoomAvailabilityPublisher();
     private final BillingService billingService = new BillingService(
-            billingRepository, paymentRepository, reservationRepository, roomRepository, loyaltyService);
+            billingRepository, paymentRepository, reservationRepository, roomRepository, loyaltyService,
+            roomAvailabilityPublisher);
+
+    BillingServiceTest() {
+        roomAvailabilityPublisher.attach(new WaitlistSubscriber(waitlistRepository));
+    }
 
     private Reservation newReservationWithTotal(double total, LocalDate checkIn, LocalDate checkOut, Room room) {
         Guest guest = new Guest("Bill Payer", "555-0300", "bill." + UUID.randomUUID() + "@example.com",
@@ -107,5 +120,33 @@ class BillingServiceTest {
 
         Room reloadedRoom = roomRepository.findById(room.getId()).orElseThrow();
         assertEquals(RoomStatus.AVAILABLE, reloadedRoom.getStatus());
+    }
+
+    @Test
+    void checkoutNotifiesAMatchingWaitingWaitlistEntryButNotAMismatchedOne() {
+        Room room = roomRepository.save(new Room(RoomType.PENTHOUSE, 400.0, RoomStatus.AVAILABLE));
+        LocalDate checkIn = LocalDate.now().plusDays(DAY_OFFSET + 400);
+        LocalDate checkOut = checkIn.plusDays(2);
+        Reservation reservation = newReservationWithTotal(400.0, checkIn, checkOut, room);
+        billingService.createBillingFor(reservation);
+        billingService.recordPayment(reservation, PaymentMethod.CASH, 400.0);
+
+        Guest waitingGuest = new Guest("Waiting Guest", "555-0301", "wait." + UUID.randomUUID() + "@example.com",
+                "1 Queue Ln", "Q1U 2E3");
+        guestRepository.save(waitingGuest);
+        // Matches: same room type, overlapping dates.
+        Waitlist matchingEntry = waitlistRepository.save(new Waitlist(waitingGuest, RoomType.PENTHOUSE,
+                checkIn, checkOut, WaitlistSubscriber.STATUS_WAITING));
+        // Doesn't match: different room type.
+        Waitlist wrongTypeEntry = waitlistRepository.save(new Waitlist(waitingGuest, RoomType.SINGLE,
+                checkIn, checkOut, WaitlistSubscriber.STATUS_WAITING));
+
+        billingService.checkout(reservation);
+
+        Waitlist reloadedMatch = waitlistRepository.findById(matchingEntry.getId()).orElseThrow();
+        assertEquals(WaitlistSubscriber.STATUS_AVAILABLE, reloadedMatch.getStatus());
+
+        Waitlist reloadedMismatch = waitlistRepository.findById(wrongTypeEntry.getId()).orElseThrow();
+        assertEquals(WaitlistSubscriber.STATUS_WAITING, reloadedMismatch.getStatus());
     }
 }

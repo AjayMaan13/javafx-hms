@@ -1,12 +1,17 @@
 package com.hotel.service;
 
 import com.hotel.controller.kiosk.BookingDraft;
+import com.hotel.events.RoomAvailabilityPublisher;
+import com.hotel.events.WaitlistSubscriber;
+import com.hotel.model.Guest;
 import com.hotel.model.Reservation;
+import com.hotel.model.Waitlist;
 import com.hotel.model.enums.RoomType;
 import com.hotel.repository.AddonRepository;
 import com.hotel.repository.GuestRepository;
 import com.hotel.repository.ReservationRepository;
 import com.hotel.repository.RoomRepository;
+import com.hotel.repository.WaitlistRepository;
 import com.hotel.service.pricing.StandardPricingStrategy;
 import com.hotel.util.DataSeeder;
 import com.hotel.util.PersistenceManager;
@@ -31,6 +36,8 @@ class ReservationServiceTest {
     private static final LocalDate CHECK_IN = LocalDate.now().plusDays(DAY_OFFSET);
     private static final LocalDate CHECK_OUT = CHECK_IN.plusDays(2);
 
+    private final WaitlistRepository waitlistRepository = new WaitlistRepository();
+
     private ReservationService newService() {
         GuestRepository guestRepository = new GuestRepository();
         RoomRepository roomRepository = new RoomRepository();
@@ -45,11 +52,15 @@ class ReservationServiceTest {
                 new com.hotel.repository.LoyaltyAccountRepository(),
                 new com.hotel.repository.LoyaltyConfigRepository(),
                 new com.hotel.repository.LoyaltyTransactionRepository(), new com.hotel.repository.BillingRepository());
+
+        RoomAvailabilityPublisher publisher = new RoomAvailabilityPublisher();
+        publisher.attach(new WaitlistSubscriber(waitlistRepository));
+
         BillingService billingService = new BillingService(
                 new com.hotel.repository.BillingRepository(), new com.hotel.repository.PaymentRepository(),
-                reservationRepository, roomRepository, loyaltyService);
+                reservationRepository, roomRepository, loyaltyService, publisher);
         return new ReservationService(guestRepository, roomRepository, reservationRepository, addonRepository,
-                pricingService, billingService);
+                pricingService, billingService, publisher);
     }
 
     private BookingDraft validSingleGuestDraft(String email, LocalDate checkIn, LocalDate checkOut) {
@@ -124,5 +135,29 @@ class ReservationServiceTest {
                 validSingleGuestDraft(email, CHECK_IN.plusDays(210), CHECK_OUT.plusDays(210)));
 
         assertEquals(first.getGuest().getId(), second.getGuest().getId());
+    }
+
+    @Test
+    void cancellingANonKioskReservationNotifiesAMatchingWaitlistEntry() {
+        ReservationService service = newService();
+        LocalDate checkIn = CHECK_IN.plusDays(500);
+        LocalDate checkOut = CHECK_OUT.plusDays(500);
+
+        Reservation reservation = service.createReservation(
+                validSingleGuestDraft("cancel." + UUID.randomUUID() + "@example.com", checkIn, checkOut));
+
+        Guest waitingGuest = new Guest("Waitlisted", "555-0600", "waitlisted." + UUID.randomUUID() + "@example.com",
+                "1 Standby St", "S7B 8Y9");
+        new GuestRepository().save(waitingGuest);
+        Waitlist entry = waitlistRepository.save(
+                new Waitlist(waitingGuest, RoomType.SINGLE, checkIn, checkOut, WaitlistSubscriber.STATUS_WAITING));
+
+        service.cancelReservation(reservation.getId());
+
+        Waitlist reloaded = waitlistRepository.findById(entry.getId()).orElseThrow();
+        assertEquals(WaitlistSubscriber.STATUS_AVAILABLE, reloaded.getStatus());
+
+        // The room itself is bookable again too (cancelled reservations are excluded).
+        assertTrue(new RoomRepository().findAvailable(RoomType.SINGLE, checkIn, checkOut).size() > 0);
     }
 }

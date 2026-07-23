@@ -67,6 +67,7 @@ public class ReservationDetailController implements AdminScreenController {
     private final ReservationRepository reservationRepository;
     private final RoomRepository roomRepository;
     private final ActivityLogService activityLogService;
+    private final com.hotel.service.ReservationService reservationService;
 
     private AdminShellController shell;
     private Reservation reservation;
@@ -76,6 +77,25 @@ public class ReservationDetailController implements AdminScreenController {
         reservationRepository = new ReservationRepository();
         roomRepository = new RoomRepository();
         activityLogService = new ActivityLogService(new AuditLogRepository(), LoggerService.getInstance());
+
+        // TODO Phase 10: inject these from AppConfig instead of constructing per-controller.
+        // Cancel routes through ReservationService (not the repo directly) so the Observer
+        // fires; the waitlist subscriber's effect is a DB write, so it's globally visible
+        // regardless of which publisher instance triggered it.
+        com.hotel.repository.GuestRepository guestRepository = new com.hotel.repository.GuestRepository();
+        com.hotel.repository.AddonRepository addonRepository = new com.hotel.repository.AddonRepository();
+        com.hotel.service.PricingService pricingService = new com.hotel.service.PricingService(
+                new com.hotel.service.pricing.StandardPricingStrategy());
+        com.hotel.service.LoyaltyService loyaltyService = new com.hotel.service.LoyaltyService(
+                new com.hotel.repository.LoyaltyAccountRepository(), new com.hotel.repository.LoyaltyConfigRepository(),
+                new com.hotel.repository.LoyaltyTransactionRepository(), new com.hotel.repository.BillingRepository());
+        com.hotel.events.RoomAvailabilityPublisher publisher = new com.hotel.events.RoomAvailabilityPublisher();
+        publisher.attach(new com.hotel.events.WaitlistSubscriber(new com.hotel.repository.WaitlistRepository()));
+        com.hotel.service.BillingService billingService = new com.hotel.service.BillingService(
+                new com.hotel.repository.BillingRepository(), new com.hotel.repository.PaymentRepository(),
+                reservationRepository, roomRepository, loyaltyService, publisher);
+        reservationService = new com.hotel.service.ReservationService(guestRepository, roomRepository,
+                reservationRepository, addonRepository, pricingService, billingService, publisher);
     }
 
     @Override
@@ -232,7 +252,9 @@ public class ReservationDetailController implements AdminScreenController {
 
     @FXML
     private void cancelReservation() {
-        reservationRepository.updateStatus(reservation.getId(), ReservationStatus.CANCELLED);
+        // Routed through ReservationService (not reservationRepository directly) so the
+        // Observer fires: a matching waitlist entry gets notified when this frees a room.
+        reservationService.cancelReservation(reservation.getId());
 
         if (shell.getCurrentAdmin() != null) {
             activityLogService.record(shell.getCurrentAdmin(), "RESERVATION_CANCELLED", "Reservation",

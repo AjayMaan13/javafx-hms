@@ -1,5 +1,7 @@
 package com.hotel.app;
 
+import com.hotel.events.RoomAvailabilityPublisher;
+import com.hotel.events.WaitlistSubscriber;
 import com.hotel.repository.AddonRepository;
 import com.hotel.repository.AdminUserRepository;
 import com.hotel.repository.AuditLogRepository;
@@ -11,6 +13,7 @@ import com.hotel.repository.LoyaltyTransactionRepository;
 import com.hotel.repository.PaymentRepository;
 import com.hotel.repository.ReservationRepository;
 import com.hotel.repository.RoomRepository;
+import com.hotel.repository.WaitlistRepository;
 import com.hotel.config.DiscountPolicy;
 import com.hotel.security.AuthService;
 import com.hotel.security.BCryptPasswordHasher;
@@ -41,24 +44,35 @@ public class AppConfig {
     private final LoyaltyAccountRepository loyaltyAccountRepository = new LoyaltyAccountRepository();
     private final LoyaltyConfigRepository loyaltyConfigRepository = new LoyaltyConfigRepository();
     private final LoyaltyTransactionRepository loyaltyTransactionRepository = new LoyaltyTransactionRepository();
+    private final WaitlistRepository waitlistRepository = new WaitlistRepository();
 
     private final BCryptPasswordHasher passwordHasher = new BCryptPasswordHasher();
     private final LoggerService loggerService = LoggerService.getInstance();
+
+    // Observer: one publisher for the whole app, with the waitlist subscriber attached once
+    // here. Nothing else needs to know WaitlistSubscriber exists — services just publish().
+    private final RoomAvailabilityPublisher roomAvailabilityPublisher = new RoomAvailabilityPublisher();
 
     private final PricingService pricingService = new PricingService(DEFAULT_PRICING_STRATEGY);
     // LoyaltyService is built before BillingService because BillingService earns points on payment.
     private final LoyaltyService loyaltyService = new LoyaltyService(
             loyaltyAccountRepository, loyaltyConfigRepository, loyaltyTransactionRepository, billingRepository);
     private final BillingService billingService = new BillingService(
-            billingRepository, paymentRepository, reservationRepository, roomRepository, loyaltyService);
+            billingRepository, paymentRepository, reservationRepository, roomRepository, loyaltyService,
+            roomAvailabilityPublisher);
     private final ReservationService reservationService = new ReservationService(
-            guestRepository, roomRepository, reservationRepository, addonRepository, pricingService, billingService);
+            guestRepository, roomRepository, reservationRepository, addonRepository, pricingService, billingService,
+            roomAvailabilityPublisher);
     private final AuthService authService = new AuthService(adminUserRepository, passwordHasher);
     private final ActivityLogService activityLogService = new ActivityLogService(auditLogRepository, loggerService);
     private final DiscountService discountService = new DiscountService(billingRepository, new DiscountPolicy());
 
     private final DataSeeder dataSeeder = new DataSeeder(roomRepository, addonRepository, adminUserRepository,
             loyaltyConfigRepository, passwordHasher);
+
+    public AppConfig() {
+        roomAvailabilityPublisher.attach(new WaitlistSubscriber(waitlistRepository));
+    }
 
     public void seedData() {
         dataSeeder.seedIfEmpty();
@@ -82,6 +96,14 @@ public class AppConfig {
 
     public DiscountService getDiscountService() {
         return discountService;
+    }
+
+    public RoomAvailabilityPublisher getRoomAvailabilityPublisher() {
+        return roomAvailabilityPublisher;
+    }
+
+    public WaitlistRepository getWaitlistRepository() {
+        return waitlistRepository;
     }
 
     public AddonRepository getAddonRepository() {

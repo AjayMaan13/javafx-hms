@@ -8,13 +8,18 @@ import com.hotel.model.Room;
 import com.hotel.model.enums.PaymentMethod;
 import com.hotel.model.enums.ReservationStatus;
 import com.hotel.model.enums.RoomStatus;
+import com.hotel.model.enums.RoomType;
+import com.hotel.events.RoomAvailabilityEvent;
+import com.hotel.events.RoomAvailabilityPublisher;
 import com.hotel.repository.BillingRepository;
 import com.hotel.repository.PaymentRepository;
 import com.hotel.repository.ReservationRepository;
 import com.hotel.repository.RoomRepository;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class BillingService {
 
@@ -27,15 +32,17 @@ public class BillingService {
     private final ReservationRepository reservationRepository;
     private final RoomRepository roomRepository;
     private final LoyaltyService loyaltyService;
+    private final RoomAvailabilityPublisher roomAvailabilityPublisher;
 
     public BillingService(BillingRepository billingRepository, PaymentRepository paymentRepository,
                            ReservationRepository reservationRepository, RoomRepository roomRepository,
-                           LoyaltyService loyaltyService) {
+                           LoyaltyService loyaltyService, RoomAvailabilityPublisher roomAvailabilityPublisher) {
         this.billingRepository = billingRepository;
         this.paymentRepository = paymentRepository;
         this.reservationRepository = reservationRepository;
         this.roomRepository = roomRepository;
         this.loyaltyService = loyaltyService;
+        this.roomAvailabilityPublisher = roomAvailabilityPublisher;
     }
 
     /** Called when a reservation is confirmed: total_due = total, nothing paid yet. */
@@ -115,7 +122,21 @@ public class BillingService {
             roomRepository.updateStatus(room.getId(), RoomStatus.AVAILABLE);
         }
 
-        // TODO Phase 8 (Observer): fire a room-availability event here so subscribed
-        // admins / waitlist entries are notified.
+        publishAvailability(rooms, reservation);
+    }
+
+    /**
+     * Observer: one event per distinct room type freed by this reservation, so a waitlist
+     * entry for "any Double for these dates" gets notified once, not once per room.
+     */
+    private void publishAvailability(List<Room> rooms, Reservation reservation) {
+        Set<RoomType> freedTypes = new LinkedHashSet<>();
+        for (Room room : rooms) {
+            freedTypes.add(room.getType());
+        }
+        for (RoomType type : freedTypes) {
+            roomAvailabilityPublisher.publish(
+                    new RoomAvailabilityEvent(type, reservation.getCheckIn(), reservation.getCheckOut()));
+        }
     }
 }

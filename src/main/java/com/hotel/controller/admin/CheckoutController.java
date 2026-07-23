@@ -49,8 +49,15 @@ public class CheckoutController implements AdminScreenController {
                 new com.hotel.repository.LoyaltyAccountRepository(),
                 new com.hotel.repository.LoyaltyConfigRepository(),
                 new com.hotel.repository.LoyaltyTransactionRepository(), new BillingRepository());
+
+        // Observer: checkout fires a room-availability event, so the waitlist subscriber
+        // needs to actually be attached here (its effect — flipping a Waitlist row's status
+        // in the DB — is globally visible regardless of which publisher instance fired it).
+        com.hotel.events.RoomAvailabilityPublisher publisher = new com.hotel.events.RoomAvailabilityPublisher();
+        publisher.attach(new com.hotel.events.WaitlistSubscriber(new com.hotel.repository.WaitlistRepository()));
+
         billingService = new BillingService(new BillingRepository(), new PaymentRepository(),
-                new ReservationRepository(), new RoomRepository(), loyaltyService);
+                new ReservationRepository(), new RoomRepository(), loyaltyService, publisher);
         activityLogService = new ActivityLogService(new AuditLogRepository(), LoggerService.getInstance());
     }
 

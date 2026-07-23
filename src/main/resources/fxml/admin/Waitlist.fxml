@@ -13,7 +13,8 @@
 <?import javafx.scene.layout.VBox?>
 
 <!-- ADMIN SCREEN 6 content only: Waitlist. Header/side-nav now live once in
-     AdminShell.fxml. Add guest (room type + date range); convert to reservation. -->
+     AdminShell.fxml. Add guest (room type + date range); rooms freed by checkout/cancel
+     (Observer pattern) flip a matching entry to AVAILABLE, ready to convert. -->
 <VBox spacing="16.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.hotel.controller.admin.WaitlistController">
     <padding>
@@ -32,35 +33,41 @@
             <Label styleClass="field-label" text="Phone" GridPane.columnIndex="2" GridPane.rowIndex="0" />
             <TextField fx:id="phoneField" prefWidth="150.0" promptText="Phone" GridPane.columnIndex="3" GridPane.rowIndex="0" />
 
-            <Label styleClass="field-label" text="Room type" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <ComboBox fx:id="roomTypeComboBox" prefWidth="180.0" promptText="Single / Double / Penthouse"
-                      GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label styleClass="field-label" text="Email" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <TextField fx:id="emailField" prefWidth="180.0" promptText="guest@example.com" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-            <Label styleClass="field-label" text="Start date" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <DatePicker fx:id="startDatePicker" prefWidth="150.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <Label styleClass="field-label" text="Room type" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <ComboBox fx:id="roomTypeComboBox" prefWidth="150.0" promptText="Room type"
+                      GridPane.columnIndex="3" GridPane.rowIndex="1" />
 
-            <Label styleClass="field-label" text="End date" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-            <DatePicker fx:id="endDatePicker" prefWidth="180.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label styleClass="field-label" text="Start date" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <DatePicker fx:id="startDatePicker" prefWidth="180.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+            <Label styleClass="field-label" text="End date" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <DatePicker fx:id="endDatePicker" prefWidth="150.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
         </GridPane>
         <HBox>
             <Button styleClass="primary-btn" text="Add to Waitlist" onAction="#addToWaitlist" />
         </HBox>
+        <Label fx:id="messageLabel" styleClass="error-text" wrapText="true" />
     </VBox>
 
     <!-- Waitlist entries -->
     <Label styleClass="field-label" text="Current Waitlist" />
+    <Label styleClass="subtitle"
+           text="AVAILABLE means a matching room was just freed by a checkout or cancellation." />
     <TableView fx:id="waitlistTable" prefHeight="220.0">
         <columns>
-            <TableColumn prefWidth="150.0" text="Guest" />
-            <TableColumn prefWidth="120.0" text="Room Type" />
-            <TableColumn prefWidth="100.0" text="Start" />
-            <TableColumn prefWidth="100.0" text="End" />
-            <TableColumn prefWidth="100.0" text="Status" />
+            <TableColumn fx:id="guestColumn" prefWidth="150.0" text="Guest" />
+            <TableColumn fx:id="roomTypeColumn" prefWidth="120.0" text="Room Type" />
+            <TableColumn fx:id="startColumn" prefWidth="100.0" text="Start" />
+            <TableColumn fx:id="endColumn" prefWidth="100.0" text="End" />
+            <TableColumn fx:id="statusColumn" prefWidth="120.0" text="Status" />
         </columns>
     </TableView>
 
     <HBox alignment="CENTER_RIGHT" spacing="12.0">
-        <Button styleClass="secondary-btn" text="Cancel" onAction="#cancelWaitlistEntry" />
+        <Button styleClass="secondary-btn" text="Cancel Entry" onAction="#cancelWaitlistEntry" />
         <Button styleClass="primary-btn" text="Convert to Reservation" onAction="#convertToReservation" />
     </HBox>
 </VBox>

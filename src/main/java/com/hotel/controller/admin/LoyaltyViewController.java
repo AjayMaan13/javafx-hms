@@ -77,9 +77,11 @@ public class LoyaltyViewController implements AdminScreenController {
         loyaltyService = new LoyaltyService(new LoyaltyAccountRepository(), new LoyaltyConfigRepository(),
                 new LoyaltyTransactionRepository(), billingRepository);
         // TODO Phase 10: inject from AppConfig instead of per-controller construction.
+        // This screen never calls checkout(), so the publisher here never actually fires —
+        // it's only present to satisfy BillingService's constructor.
         billingService = new BillingService(billingRepository, new com.hotel.repository.PaymentRepository(),
                 new com.hotel.repository.ReservationRepository(), new com.hotel.repository.RoomRepository(),
-                loyaltyService);
+                loyaltyService, new com.hotel.events.RoomAvailabilityPublisher());
         activityLogService = new ActivityLogService(new AuditLogRepository(), LoggerService.getInstance());
     }
 

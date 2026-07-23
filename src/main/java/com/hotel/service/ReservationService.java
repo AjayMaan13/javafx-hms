@@ -1,6 +1,8 @@
 package com.hotel.service;
 
 import com.hotel.controller.kiosk.BookingDraft;
+import com.hotel.events.RoomAvailabilityEvent;
+import com.hotel.events.RoomAvailabilityPublisher;
 import com.hotel.model.Addon;
 import com.hotel.model.Guest;
 import com.hotel.model.Reservation;
@@ -17,8 +19,11 @@ import com.hotel.service.billing.PricedBooking;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ReservationService {
@@ -29,16 +34,19 @@ public class ReservationService {
     private final AddonRepository addonRepository;
     private final PricingService pricingService;
     private final BillingService billingService;
+    private final RoomAvailabilityPublisher roomAvailabilityPublisher;
 
     public ReservationService(GuestRepository guestRepository, RoomRepository roomRepository,
                                ReservationRepository reservationRepository, AddonRepository addonRepository,
-                               PricingService pricingService, BillingService billingService) {
+                               PricingService pricingService, BillingService billingService,
+                               RoomAvailabilityPublisher roomAvailabilityPublisher) {
         this.guestRepository = guestRepository;
         this.roomRepository = roomRepository;
         this.reservationRepository = reservationRepository;
         this.addonRepository = addonRepository;
         this.pricingService = pricingService;
         this.billingService = billingService;
+        this.roomAvailabilityPublisher = roomAvailabilityPublisher;
     }
 
     public Reservation createReservation(BookingDraft draft) {
@@ -68,6 +76,26 @@ public class ReservationService {
         billingService.createBillingFor(reservation);
 
         return reservation;
+    }
+
+    /**
+     * Cancels a reservation and publishes a room-availability event per distinct room type
+     * it was holding, so any matching waitlist entries get notified (Observer pattern).
+     */
+    public void cancelReservation(UUID reservationId) {
+        Reservation reservation = reservationRepository.findByIdWithRooms(reservationId)
+                .orElseThrow(() -> new BookingValidationException("Reservation not found: " + reservationId));
+
+        reservationRepository.updateStatus(reservationId, ReservationStatus.CANCELLED);
+
+        Set<RoomType> freedTypes = new LinkedHashSet<>();
+        for (Room room : reservation.getRooms()) {
+            freedTypes.add(room.getType());
+        }
+        for (RoomType type : freedTypes) {
+            roomAvailabilityPublisher.publish(
+                    new RoomAvailabilityEvent(type, reservation.getCheckIn(), reservation.getCheckOut()));
+        }
     }
 
     private void validateOccupancy(BookingDraft draft) {
