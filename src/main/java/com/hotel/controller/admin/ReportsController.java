@@ -1,10 +1,6 @@
 package com.hotel.controller.admin;
 
 import com.hotel.model.AuditLog;
-import com.hotel.repository.AuditLogRepository;
-import com.hotel.repository.BillingRepository;
-import com.hotel.repository.ReservationRepository;
-import com.hotel.repository.RoomRepository;
 import com.hotel.service.ReportingService;
 import com.hotel.service.reporting.OccupancyReportRow;
 import com.hotel.service.reporting.RevenueReportRow;
@@ -27,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReportsController {
+public class ReportsController implements AdminScreenController {
 
     private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
@@ -42,9 +38,7 @@ public class ReportsController {
     @FXML
     private Label messageLabel;
 
-    // TODO Phase 10: inject this from AppConfig instead of constructing per-controller.
-    private final ReportingService reportingService = new ReportingService(
-            new ReservationRepository(), new RoomRepository(), new BillingRepository(), new AuditLogRepository());
+    private ReportingService reportingService;
     private final CsvExporter csvExporter = new CsvExporter();
     private final TxtExporter txtExporter = new TxtExporter();
     private final PdfExporter pdfExporter = new PdfExporter();
@@ -54,6 +48,11 @@ public class ReportsController {
     private String currentReportType = "";
     private List<String> currentHeaders = List.of();
     private List<List<String>> currentRows = List.of();
+
+    @Override
+    public void setShell(AdminShellController shell) {
+        this.reportingService = shell.getAppConfig().getReportingService();
+    }
 
     @FXML
     private void initialize() {

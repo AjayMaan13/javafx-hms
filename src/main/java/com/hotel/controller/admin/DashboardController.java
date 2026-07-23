@@ -39,16 +39,14 @@ public class DashboardController implements AdminScreenController {
     @FXML
     private TableView<Reservation> reservationTable;
 
-    private final ReservationRepository reservationRepository;
+    private ReservationRepository reservationRepository;
     private AdminShellController shell;
-
-    public DashboardController() {
-        reservationRepository = new ReservationRepository();
-    }
 
     @Override
     public void setShell(AdminShellController shell) {
         this.shell = shell;
+        this.reservationRepository = shell.getAppConfig().getReservationRepository();
+        loadAll();
     }
 
     @FXML
@@ -63,7 +61,8 @@ public class DashboardController implements AdminScreenController {
         statusFilterCombo.getSelectionModel().selectFirst();
 
         reservationTable.setPlaceholder(new Label("No reservations found."));
-        loadAll();
+        // Data loads once setShell() supplies the real repository — not here, since this
+        // FXML initialize() runs before the shell hands over AppConfig.
     }
 
     @FXML

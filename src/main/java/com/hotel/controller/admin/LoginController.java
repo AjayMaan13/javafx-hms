@@ -1,10 +1,8 @@
 package com.hotel.controller.admin;
 
+import com.hotel.app.AppConfig;
 import com.hotel.model.AdminUser;
-import com.hotel.repository.AdminUserRepository;
-import com.hotel.repository.AuditLogRepository;
 import com.hotel.security.AuthService;
-import com.hotel.security.BCryptPasswordHasher;
 import com.hotel.service.ActivityLogService;
 import com.hotel.util.LoggerService;
 import javafx.event.ActionEvent;
@@ -32,14 +30,21 @@ public class LoginController {
     @FXML
     private Label messageLabel;
 
-    private final AuthService authService;
-    private final ActivityLogService activityLogService;
-    private final LoggerService loggerService;
+    private AppConfig appConfig;
+    private AuthService authService;
+    private ActivityLogService activityLogService;
+    private LoggerService loggerService;
 
-    public LoginController() {
-        authService = new AuthService(new AdminUserRepository(), new BCryptPasswordHasher());
-        activityLogService = new ActivityLogService(new AuditLogRepository(), LoggerService.getInstance());
-        loggerService = LoggerService.getInstance();
+    /**
+     * Called by AdminMain on first launch, and by AdminShellController.handleLogout() on
+     * every subsequent re-login — same AppConfig instance both times, so the whole app run
+     * shares one composition root rather than rebuilding it per session.
+     */
+    public void setAppConfig(AppConfig appConfig) {
+        this.appConfig = appConfig;
+        this.authService = appConfig.getAuthService();
+        this.activityLogService = appConfig.getActivityLogService();
+        this.loggerService = appConfig.getLoggerService();
     }
 
     @FXML
@@ -70,6 +75,7 @@ public class LoginController {
 
                 AdminShellController shellController = loader.getController();
                 shellController.setCurrentAdmin(admin.get());
+                shellController.setAppConfig(appConfig);
 
                 Stage stage = new Stage();
                 stage.setTitle("Maple Leaf Hotel — Admin");

@@ -4,15 +4,11 @@ import com.hotel.model.Billing;
 import com.hotel.model.Payment;
 import com.hotel.model.Reservation;
 import com.hotel.model.enums.PaymentMethod;
-import com.hotel.repository.AuditLogRepository;
-import com.hotel.repository.BillingRepository;
-import com.hotel.repository.PaymentRepository;
-import com.hotel.repository.ReservationRepository;
-import com.hotel.repository.RoomRepository;
 import com.hotel.service.ActivityLogService;
 import com.hotel.service.BillingException;
 import com.hotel.service.BillingService;
-import com.hotel.util.LoggerService;
+import com.hotel.service.DiscountException;
+import com.hotel.service.DiscountService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -71,28 +67,12 @@ public class PaymentsController implements AdminScreenController {
     @FXML
     private TableColumn<Payment, String> paymentAmountColumn;
 
-    private final BillingService billingService;
-    private final com.hotel.service.DiscountService discountService;
-    private final ActivityLogService activityLogService;
+    private BillingService billingService;
+    private DiscountService discountService;
+    private ActivityLogService activityLogService;
 
     private AdminShellController shell;
     private Reservation reservation;
-
-    public PaymentsController() {
-        // TODO Phase 10: inject these from AppConfig instead of constructing per-controller.
-        // This screen never calls checkout(), so the publisher here never actually fires —
-        // it's only present to satisfy BillingService's constructor.
-        com.hotel.service.LoyaltyService loyaltyService = new com.hotel.service.LoyaltyService(
-                new com.hotel.repository.LoyaltyAccountRepository(),
-                new com.hotel.repository.LoyaltyConfigRepository(),
-                new com.hotel.repository.LoyaltyTransactionRepository(), new BillingRepository());
-        billingService = new BillingService(new BillingRepository(), new PaymentRepository(),
-                new ReservationRepository(), new RoomRepository(), loyaltyService,
-                new com.hotel.events.RoomAvailabilityPublisher());
-        discountService = new com.hotel.service.DiscountService(
-                new BillingRepository(), new com.hotel.config.DiscountPolicy());
-        activityLogService = new ActivityLogService(new AuditLogRepository(), LoggerService.getInstance());
-    }
 
     @FXML
     private void initialize() {
@@ -111,6 +91,10 @@ public class PaymentsController implements AdminScreenController {
     @Override
     public void setShell(AdminShellController shell) {
         this.shell = shell;
+        this.billingService = shell.getAppConfig().getBillingService();
+        this.discountService = shell.getAppConfig().getDiscountService();
+        this.activityLogService = shell.getAppConfig().getActivityLogService();
+
         this.reservation = shell.getSelectedReservation();
         if (reservation == null) {
             showEmptyState();
@@ -216,7 +200,7 @@ public class PaymentsController implements AdminScreenController {
             customDiscountField.clear();
             messageLabel.setText(String.format("Applied a %.1f%% discount ($%.2f).", percent, discount));
             refresh();
-        } catch (com.hotel.service.DiscountException e) {
+        } catch (DiscountException e) {
             messageLabel.setText(e.getMessage());
         }
     }

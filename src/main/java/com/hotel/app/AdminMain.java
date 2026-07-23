@@ -1,5 +1,6 @@
 package com.hotel.app;
 
+import com.hotel.controller.admin.LoginController;
 import com.hotel.util.PersistenceManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -16,6 +17,9 @@ public class AdminMain extends Application {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/admin/Login.fxml"));
         Parent root = loader.load();
+
+        LoginController loginController = loader.getController();
+        loginController.setAppConfig(appConfig);
 
         primaryStage.setTitle("Maple Leaf Hotel - Admin");
         primaryStage.setScene(new Scene(root));

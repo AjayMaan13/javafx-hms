@@ -4,11 +4,10 @@ import com.hotel.model.Reservation;
 import com.hotel.model.Room;
 import com.hotel.model.enums.ReservationStatus;
 import com.hotel.model.enums.RoomType;
-import com.hotel.repository.AuditLogRepository;
 import com.hotel.repository.ReservationRepository;
 import com.hotel.repository.RoomRepository;
 import com.hotel.service.ActivityLogService;
-import com.hotel.util.LoggerService;
+import com.hotel.service.ReservationService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -64,43 +63,25 @@ public class ReservationDetailController implements AdminScreenController {
     @FXML
     private ComboBox<String> statusComboBox;
 
-    private final ReservationRepository reservationRepository;
-    private final RoomRepository roomRepository;
-    private final ActivityLogService activityLogService;
-    private final com.hotel.service.ReservationService reservationService;
+    private ReservationRepository reservationRepository;
+    private RoomRepository roomRepository;
+    private ActivityLogService activityLogService;
+    private ReservationService reservationService;
 
     private AdminShellController shell;
     private Reservation reservation;
     private final ObservableList<Room> pendingRooms = FXCollections.observableArrayList();
 
-    public ReservationDetailController() {
-        reservationRepository = new ReservationRepository();
-        roomRepository = new RoomRepository();
-        activityLogService = new ActivityLogService(new AuditLogRepository(), LoggerService.getInstance());
-
-        // TODO Phase 10: inject these from AppConfig instead of constructing per-controller.
-        // Cancel routes through ReservationService (not the repo directly) so the Observer
-        // fires; the waitlist subscriber's effect is a DB write, so it's globally visible
-        // regardless of which publisher instance triggered it.
-        com.hotel.repository.GuestRepository guestRepository = new com.hotel.repository.GuestRepository();
-        com.hotel.repository.AddonRepository addonRepository = new com.hotel.repository.AddonRepository();
-        com.hotel.service.PricingService pricingService = new com.hotel.service.PricingService(
-                new com.hotel.service.pricing.StandardPricingStrategy());
-        com.hotel.service.LoyaltyService loyaltyService = new com.hotel.service.LoyaltyService(
-                new com.hotel.repository.LoyaltyAccountRepository(), new com.hotel.repository.LoyaltyConfigRepository(),
-                new com.hotel.repository.LoyaltyTransactionRepository(), new com.hotel.repository.BillingRepository());
-        com.hotel.events.RoomAvailabilityPublisher publisher = new com.hotel.events.RoomAvailabilityPublisher();
-        publisher.attach(new com.hotel.events.WaitlistSubscriber(new com.hotel.repository.WaitlistRepository()));
-        com.hotel.service.BillingService billingService = new com.hotel.service.BillingService(
-                new com.hotel.repository.BillingRepository(), new com.hotel.repository.PaymentRepository(),
-                reservationRepository, roomRepository, loyaltyService, publisher);
-        reservationService = new com.hotel.service.ReservationService(guestRepository, roomRepository,
-                reservationRepository, addonRepository, pricingService, billingService, publisher);
-    }
-
     @Override
     public void setShell(AdminShellController shell) {
         this.shell = shell;
+        this.reservationRepository = shell.getAppConfig().getReservationRepository();
+        this.roomRepository = shell.getAppConfig().getRoomRepository();
+        this.activityLogService = shell.getAppConfig().getActivityLogService();
+        // Cancel routes through the app-wide ReservationService (not the repo directly) so
+        // the Observer fires using the real, already-wired WaitlistSubscriber.
+        this.reservationService = shell.getAppConfig().getReservationService();
+
         Reservation selected = shell.getSelectedReservation();
         if (selected == null) {
             showEmptyState();

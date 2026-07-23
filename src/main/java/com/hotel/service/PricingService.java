@@ -1,5 +1,6 @@
 package com.hotel.service;
 
+import com.hotel.config.PricingPolicy;
 import com.hotel.model.Room;
 import com.hotel.service.pricing.PricingStrategy;
 
@@ -8,12 +9,12 @@ import java.util.List;
 
 public class PricingService {
 
-    private static final double HST_RATE = 0.13;
-
     private final PricingStrategy pricingStrategy;
+    private final PricingPolicy pricingPolicy;
 
-    public PricingService(PricingStrategy pricingStrategy) {
+    public PricingService(PricingStrategy pricingStrategy, PricingPolicy pricingPolicy) {
         this.pricingStrategy = pricingStrategy;
+        this.pricingPolicy = pricingPolicy;
     }
 
     public double calculateSubtotal(List<Room> rooms, LocalDate checkIn, LocalDate checkOut) {
@@ -27,7 +28,7 @@ public class PricingService {
     }
 
     public double calculateTax(double subtotal) {
-        return subtotal * HST_RATE;
+        return subtotal * pricingPolicy.getTaxRate();
     }
 
     public double calculateTotal(List<Room> rooms, LocalDate checkIn, LocalDate checkOut) {

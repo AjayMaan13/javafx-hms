@@ -1,5 +1,6 @@
 package com.hotel.controller.admin;
 
+import com.hotel.app.AppConfig;
 import com.hotel.model.AdminUser;
 import com.hotel.model.Reservation;
 import javafx.fxml.FXML;
@@ -43,12 +44,23 @@ public class AdminShellController {
     @FXML
     private StackPane contentContainer;
 
+    private AppConfig appConfig;
     private AdminUser currentAdmin;
     private Reservation selectedReservation;
 
-    @FXML
-    private void initialize() {
+    /**
+     * Called by LoginController right after this shell loads. Deliberately NOT done in an
+     * FXML initialize() — that runs automatically during FXMLLoader.load(), before the
+     * caller has a chance to hand over AppConfig, which would leave every screen's
+     * setShell() reading a null AppConfig on the very first navigation.
+     */
+    public void setAppConfig(AppConfig appConfig) {
+        this.appConfig = appConfig;
         navigateTo("dashboard");
+    }
+
+    public AppConfig getAppConfig() {
+        return appConfig;
     }
 
     public void setCurrentAdmin(AdminUser currentAdmin) {
@@ -61,9 +73,9 @@ public class AdminShellController {
 
     /**
      * The reservation the admin is currently working on. Set by double-clicking a Dashboard
-     * row; read by the Reservation Detail, Payments, and Checkout screens. Persists across
-     * navigation so you can open a reservation, then jump to its Payments/Checkout screen.
-     * Null on fresh login → those screens show an empty state.
+     * row; read by the Reservation Detail, Payments, Checkout, and Loyalty screens. Persists
+     * across navigation so you can open a reservation, then jump to its Payments/Checkout
+     * screen. Null on fresh login → those screens show an empty state.
      */
     public void setSelectedReservation(Reservation reservation) {
         this.selectedReservation = reservation;
@@ -136,6 +148,11 @@ public class AdminShellController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/admin/Login.fxml"));
             Parent root = loader.load();
+
+            // Same AppConfig instance carries forward across logout/re-login — one
+            // composition root for the whole app run, not a fresh one per session.
+            LoginController loginController = loader.getController();
+            loginController.setAppConfig(appConfig);
 
             Stage loginStage = new Stage();
             loginStage.setTitle("Maple Leaf Hotel — Admin");

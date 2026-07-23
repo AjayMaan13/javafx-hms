@@ -4,16 +4,10 @@ import com.hotel.model.Billing;
 import com.hotel.model.LoyaltyAccount;
 import com.hotel.model.LoyaltyTransaction;
 import com.hotel.model.Reservation;
-import com.hotel.repository.AuditLogRepository;
-import com.hotel.repository.BillingRepository;
-import com.hotel.repository.LoyaltyAccountRepository;
-import com.hotel.repository.LoyaltyConfigRepository;
-import com.hotel.repository.LoyaltyTransactionRepository;
 import com.hotel.service.ActivityLogService;
 import com.hotel.service.BillingService;
 import com.hotel.service.LoyaltyException;
 import com.hotel.service.LoyaltyService;
-import com.hotel.util.LoggerService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -65,25 +59,12 @@ public class LoyaltyViewController implements AdminScreenController {
     @FXML
     private TableColumn<LoyaltyTransaction, String> txDiscountColumn;
 
-    private final LoyaltyService loyaltyService;
-    private final BillingService billingService;
-    private final ActivityLogService activityLogService;
+    private LoyaltyService loyaltyService;
+    private BillingService billingService;
+    private ActivityLogService activityLogService;
 
     private AdminShellController shell;
     private Reservation reservation;
-
-    public LoyaltyViewController() {
-        BillingRepository billingRepository = new BillingRepository();
-        loyaltyService = new LoyaltyService(new LoyaltyAccountRepository(), new LoyaltyConfigRepository(),
-                new LoyaltyTransactionRepository(), billingRepository);
-        // TODO Phase 10: inject from AppConfig instead of per-controller construction.
-        // This screen never calls checkout(), so the publisher here never actually fires —
-        // it's only present to satisfy BillingService's constructor.
-        billingService = new BillingService(billingRepository, new com.hotel.repository.PaymentRepository(),
-                new com.hotel.repository.ReservationRepository(), new com.hotel.repository.RoomRepository(),
-                loyaltyService, new com.hotel.events.RoomAvailabilityPublisher());
-        activityLogService = new ActivityLogService(new AuditLogRepository(), LoggerService.getInstance());
-    }
 
     @FXML
     private void initialize() {
@@ -101,6 +82,10 @@ public class LoyaltyViewController implements AdminScreenController {
     @Override
     public void setShell(AdminShellController shell) {
         this.shell = shell;
+        this.loyaltyService = shell.getAppConfig().getLoyaltyService();
+        this.billingService = shell.getAppConfig().getBillingService();
+        this.activityLogService = shell.getAppConfig().getActivityLogService();
+
         this.reservation = shell.getSelectedReservation();
         if (reservation == null) {
             emptyStateLabel.setManaged(true);

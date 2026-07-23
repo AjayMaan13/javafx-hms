@@ -47,7 +47,7 @@ class ReservationServiceTest {
                 new com.hotel.repository.LoyaltyConfigRepository(),
                 new com.hotel.security.BCryptPasswordHasher()).seedIfEmpty();
 
-        PricingService pricingService = new PricingService(new StandardPricingStrategy());
+        PricingService pricingService = new PricingService(new StandardPricingStrategy(), new com.hotel.config.PricingPolicy());
         LoyaltyService loyaltyService = new LoyaltyService(
                 new com.hotel.repository.LoyaltyAccountRepository(),
                 new com.hotel.repository.LoyaltyConfigRepository(),

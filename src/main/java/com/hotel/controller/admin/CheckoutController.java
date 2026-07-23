@@ -2,15 +2,9 @@ package com.hotel.controller.admin;
 
 import com.hotel.model.Billing;
 import com.hotel.model.Reservation;
-import com.hotel.repository.AuditLogRepository;
-import com.hotel.repository.BillingRepository;
-import com.hotel.repository.PaymentRepository;
-import com.hotel.repository.ReservationRepository;
-import com.hotel.repository.RoomRepository;
 import com.hotel.service.ActivityLogService;
 import com.hotel.service.BillingException;
 import com.hotel.service.BillingService;
-import com.hotel.util.LoggerService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -37,33 +31,21 @@ public class CheckoutController implements AdminScreenController {
     @FXML
     private Label messageLabel;
 
-    private final BillingService billingService;
-    private final ActivityLogService activityLogService;
+    private BillingService billingService;
+    private ActivityLogService activityLogService;
 
     private AdminShellController shell;
     private Reservation reservation;
 
-    public CheckoutController() {
-        // TODO Phase 10: inject these from AppConfig instead of constructing per-controller.
-        com.hotel.service.LoyaltyService loyaltyService = new com.hotel.service.LoyaltyService(
-                new com.hotel.repository.LoyaltyAccountRepository(),
-                new com.hotel.repository.LoyaltyConfigRepository(),
-                new com.hotel.repository.LoyaltyTransactionRepository(), new BillingRepository());
-
-        // Observer: checkout fires a room-availability event, so the waitlist subscriber
-        // needs to actually be attached here (its effect — flipping a Waitlist row's status
-        // in the DB — is globally visible regardless of which publisher instance fired it).
-        com.hotel.events.RoomAvailabilityPublisher publisher = new com.hotel.events.RoomAvailabilityPublisher();
-        publisher.attach(new com.hotel.events.WaitlistSubscriber(new com.hotel.repository.WaitlistRepository()));
-
-        billingService = new BillingService(new BillingRepository(), new PaymentRepository(),
-                new ReservationRepository(), new RoomRepository(), loyaltyService, publisher);
-        activityLogService = new ActivityLogService(new AuditLogRepository(), LoggerService.getInstance());
-    }
-
     @Override
     public void setShell(AdminShellController shell) {
         this.shell = shell;
+        // Uses the app-wide BillingService, whose RoomAvailabilityPublisher already has the
+        // real WaitlistSubscriber attached (wired once in AppConfig) — checkout's Observer
+        // notification actually reaches the waitlist now, not a throwaway local instance.
+        this.billingService = shell.getAppConfig().getBillingService();
+        this.activityLogService = shell.getAppConfig().getActivityLogService();
+
         this.reservation = shell.getSelectedReservation();
         if (reservation == null) {
             showEmptyState();

@@ -1,5 +1,7 @@
 package com.hotel.app;
 
+import com.hotel.config.DiscountPolicy;
+import com.hotel.config.PricingPolicy;
 import com.hotel.events.RoomAvailabilityPublisher;
 import com.hotel.events.WaitlistSubscriber;
 import com.hotel.repository.AddonRepository;
@@ -15,7 +17,6 @@ import com.hotel.repository.PaymentRepository;
 import com.hotel.repository.ReservationRepository;
 import com.hotel.repository.RoomRepository;
 import com.hotel.repository.WaitlistRepository;
-import com.hotel.config.DiscountPolicy;
 import com.hotel.security.AuthService;
 import com.hotel.security.BCryptPasswordHasher;
 import com.hotel.service.ActivityLogService;
@@ -34,10 +35,19 @@ import com.hotel.util.LoggerService;
 import com.hotel.util.PdfExporter;
 import com.hotel.util.TxtExporter;
 
+/**
+ * The single composition root. Nothing outside this class (and tests) should ever call
+ * `new XxxService(...)` or `new XxxRepository(...)` — every screen reaches its
+ * dependencies through AdminShellController.getAppConfig() / KioskShellController.getAppConfig(),
+ * both of which are handed the one AppConfig instance built in Main/AdminMain.
+ */
 public class AppConfig {
 
+    private final PricingPolicy pricingPolicy = new PricingPolicy();
+    private final DiscountPolicy discountPolicy = new DiscountPolicy();
+
     // Swap this one line to change the pricing algorithm for the whole app.
-    private static final PricingStrategy DEFAULT_PRICING_STRATEGY = new StandardPricingStrategy();
+    private final PricingStrategy defaultPricingStrategy = new StandardPricingStrategy();
 
     private final GuestRepository guestRepository = new GuestRepository();
     private final RoomRepository roomRepository = new RoomRepository();
@@ -60,7 +70,7 @@ public class AppConfig {
     // here. Nothing else needs to know WaitlistSubscriber exists — services just publish().
     private final RoomAvailabilityPublisher roomAvailabilityPublisher = new RoomAvailabilityPublisher();
 
-    private final PricingService pricingService = new PricingService(DEFAULT_PRICING_STRATEGY);
+    private final PricingService pricingService = new PricingService(defaultPricingStrategy, pricingPolicy);
     // LoyaltyService is built before BillingService because BillingService earns points on payment.
     private final LoyaltyService loyaltyService = new LoyaltyService(
             loyaltyAccountRepository, loyaltyConfigRepository, loyaltyTransactionRepository, billingRepository);
@@ -72,7 +82,7 @@ public class AppConfig {
             roomAvailabilityPublisher);
     private final AuthService authService = new AuthService(adminUserRepository, passwordHasher);
     private final ActivityLogService activityLogService = new ActivityLogService(auditLogRepository, loggerService);
-    private final DiscountService discountService = new DiscountService(billingRepository, new DiscountPolicy());
+    private final DiscountService discountService = new DiscountService(billingRepository, discountPolicy);
     private final FeedbackService feedbackService = new FeedbackService(
             reservationRepository, guestRepository, feedbackRepository, billingService);
     private final ReportingService reportingService = new ReportingService(
@@ -135,6 +145,42 @@ public class AppConfig {
 
     public RoomAvailabilityPublisher getRoomAvailabilityPublisher() {
         return roomAvailabilityPublisher;
+    }
+
+    public GuestRepository getGuestRepository() {
+        return guestRepository;
+    }
+
+    public RoomRepository getRoomRepository() {
+        return roomRepository;
+    }
+
+    public ReservationRepository getReservationRepository() {
+        return reservationRepository;
+    }
+
+    public PaymentRepository getPaymentRepository() {
+        return paymentRepository;
+    }
+
+    public BillingRepository getBillingRepository() {
+        return billingRepository;
+    }
+
+    public LoyaltyAccountRepository getLoyaltyAccountRepository() {
+        return loyaltyAccountRepository;
+    }
+
+    public LoyaltyConfigRepository getLoyaltyConfigRepository() {
+        return loyaltyConfigRepository;
+    }
+
+    public LoyaltyTransactionRepository getLoyaltyTransactionRepository() {
+        return loyaltyTransactionRepository;
+    }
+
+    public AuditLogRepository getAuditLogRepository() {
+        return auditLogRepository;
     }
 
     public WaitlistRepository getWaitlistRepository() {

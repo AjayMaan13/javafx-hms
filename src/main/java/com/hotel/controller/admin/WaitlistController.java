@@ -1,31 +1,16 @@
 package com.hotel.controller.admin;
 
 import com.hotel.controller.kiosk.BookingDraft;
-import com.hotel.events.RoomAvailabilityPublisher;
 import com.hotel.events.WaitlistSubscriber;
 import com.hotel.model.Guest;
 import com.hotel.model.Reservation;
 import com.hotel.model.Waitlist;
 import com.hotel.model.enums.RoomType;
-import com.hotel.repository.AddonRepository;
-import com.hotel.repository.AuditLogRepository;
-import com.hotel.repository.BillingRepository;
 import com.hotel.repository.GuestRepository;
-import com.hotel.repository.LoyaltyAccountRepository;
-import com.hotel.repository.LoyaltyConfigRepository;
-import com.hotel.repository.LoyaltyTransactionRepository;
-import com.hotel.repository.PaymentRepository;
-import com.hotel.repository.ReservationRepository;
-import com.hotel.repository.RoomRepository;
 import com.hotel.repository.WaitlistRepository;
 import com.hotel.service.ActivityLogService;
-import com.hotel.service.BillingService;
 import com.hotel.service.BookingValidationException;
-import com.hotel.service.LoyaltyService;
-import com.hotel.service.PricingService;
 import com.hotel.service.ReservationService;
-import com.hotel.service.pricing.StandardPricingStrategy;
-import com.hotel.util.LoggerService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -68,39 +53,23 @@ public class WaitlistController implements AdminScreenController {
     @FXML
     private TableColumn<Waitlist, String> statusColumn;
 
-    private final GuestRepository guestRepository;
-    private final WaitlistRepository waitlistRepository;
-    private final ReservationService reservationService;
-    private final ActivityLogService activityLogService;
+    private GuestRepository guestRepository;
+    private WaitlistRepository waitlistRepository;
+    private ReservationService reservationService;
+    private ActivityLogService activityLogService;
 
     private AdminShellController shell;
-
-    public WaitlistController() {
-        // TODO Phase 10: inject these from AppConfig instead of constructing per-controller.
-        guestRepository = new GuestRepository();
-        waitlistRepository = new WaitlistRepository();
-
-        RoomRepository roomRepository = new RoomRepository();
-        ReservationRepository reservationRepository = new ReservationRepository();
-        LoyaltyService loyaltyService = new LoyaltyService(new LoyaltyAccountRepository(),
-                new LoyaltyConfigRepository(), new LoyaltyTransactionRepository(), new BillingRepository());
-
-        // Observer: this reservationService is wired the same way as everywhere else so a
-        // future checkout/cancel reachable from this screen would still notify correctly.
-        RoomAvailabilityPublisher publisher = new RoomAvailabilityPublisher();
-        publisher.attach(new WaitlistSubscriber(waitlistRepository));
-
-        BillingService billingService = new BillingService(new BillingRepository(), new PaymentRepository(),
-                reservationRepository, roomRepository, loyaltyService, publisher);
-        reservationService = new ReservationService(guestRepository, roomRepository, reservationRepository,
-                new AddonRepository(), new PricingService(new StandardPricingStrategy()), billingService, publisher);
-
-        activityLogService = new ActivityLogService(new AuditLogRepository(), LoggerService.getInstance());
-    }
 
     @Override
     public void setShell(AdminShellController shell) {
         this.shell = shell;
+        this.guestRepository = shell.getAppConfig().getGuestRepository();
+        this.waitlistRepository = shell.getAppConfig().getWaitlistRepository();
+        // App-wide ReservationService, whose RoomAvailabilityPublisher already has the real
+        // WaitlistSubscriber attached (wired once in AppConfig).
+        this.reservationService = shell.getAppConfig().getReservationService();
+        this.activityLogService = shell.getAppConfig().getActivityLogService();
+        loadWaitlist();
     }
 
     @FXML
@@ -112,8 +81,7 @@ public class WaitlistController implements AdminScreenController {
         startColumn.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getStartDate().toString()));
         endColumn.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getEndDate().toString()));
         statusColumn.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getStatus()));
-
-        loadWaitlist();
+        // Data loads once setShell() supplies the real repositories — not here.
     }
 
     @FXML

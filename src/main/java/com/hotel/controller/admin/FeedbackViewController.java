@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FeedbackViewController {
+public class FeedbackViewController implements AdminScreenController {
 
     @FXML
     private TextField guestFilterField;
@@ -48,8 +48,14 @@ public class FeedbackViewController {
     @FXML
     private TableColumn<Feedback, String> dateColumn;
 
-    private final FeedbackRepository feedbackRepository = new FeedbackRepository();
+    private FeedbackRepository feedbackRepository;
     private final CsvExporter csvExporter = new CsvExporter();
+
+    @Override
+    public void setShell(AdminShellController shell) {
+        this.feedbackRepository = shell.getAppConfig().getFeedbackRepository();
+        loadFeedback();
+    }
 
     @FXML
     private void initialize() {
@@ -64,8 +70,7 @@ public class FeedbackViewController {
         commentColumn.setCellValueFactory(d -> new SimpleStringProperty(
                 d.getValue().getComment() == null ? "" : d.getValue().getComment()));
         dateColumn.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getCreatedAt().toString()));
-
-        loadFeedback();
+        // Data loads once setShell() supplies the real repository — not here.
     }
 
     /** Simple ratings-based sentiment tag: 4-5 Positive, 3 Neutral, 1-2 Negative. */
