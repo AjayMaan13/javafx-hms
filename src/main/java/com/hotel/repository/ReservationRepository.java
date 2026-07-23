@@ -55,6 +55,25 @@ public class ReservationRepository extends BaseRepository<Reservation, UUID> {
     }
 
     /**
+     * Reservations eligible for a feedback prompt: this guest's, checked out, and with no
+     * Feedback row yet. Doesn't touch the lazy `rooms` collection, so no eager-fetch needed.
+     */
+    public List<Reservation> findCheckedOutWithoutFeedback(UUID guestId) {
+        EntityManager em = PersistenceManager.getInstance().newEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT r FROM Reservation r WHERE r.guest.id = :guestId "
+                                    + "AND r.status = com.hotel.model.enums.ReservationStatus.CHECKED_OUT "
+                                    + "AND NOT EXISTS (SELECT f FROM Feedback f WHERE f.reservation = r)",
+                            Reservation.class)
+                    .setParameter("guestId", guestId)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
      * Updates dates/status/room assignment for an existing reservation. Re-fetches the
      * reservation and each room inside one transaction (same reasoning as
      * createWithAssociations) so the join table is rebuilt against managed entities rather

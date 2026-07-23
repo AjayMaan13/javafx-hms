@@ -1,81 +1,123 @@
 package com.hotel.controller.admin;
 
+import com.hotel.model.Feedback;
+import com.hotel.repository.FeedbackRepository;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.DatePicker;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FeedbackViewController {
 
     @FXML
     private TextField guestFilterField;
-
     @FXML
     private ComboBox<String> ratingComboBox;
-
     @FXML
     private ComboBox<String> sentimentComboBox;
+    @FXML
+    private DatePicker datePicker;
+    @FXML
+    private Label averageRatingLabel;
 
     @FXML
-    private TableView<String[]> feedbackTable;
+    private TableView<Feedback> feedbackTable;
+    @FXML
+    private TableColumn<Feedback, String> guestColumn;
+    @FXML
+    private TableColumn<Feedback, String> ratingColumn;
+    @FXML
+    private TableColumn<Feedback, String> sentimentColumn;
+    @FXML
+    private TableColumn<Feedback, String> commentColumn;
+    @FXML
+    private TableColumn<Feedback, String> dateColumn;
+
+    private final FeedbackRepository feedbackRepository = new FeedbackRepository();
 
     @FXML
     private void initialize() {
-        ratingComboBox.setItems(FXCollections.observableArrayList(
-                "Any",
-                "5",
-                "4",
-                "3",
-                "2",
-                "1"
-        ));
-        sentimentComboBox.setItems(FXCollections.observableArrayList(
-                "Any",
-                "Positive",
-                "Neutral",
-                "Negative"
-        ));
+        ratingComboBox.getItems().setAll("Any", "5", "4", "3", "2", "1");
+        sentimentComboBox.getItems().setAll("Any", "Positive", "Neutral", "Negative");
         ratingComboBox.getSelectionModel().selectFirst();
         sentimentComboBox.getSelectionModel().selectFirst();
-        configureFeedbackTable();
-        feedbackTable.setItems(FXCollections.observableArrayList(
-                new String[]{"Jordan Smith", "5", "Great front desk service.", "2026-07-21"},
-                new String[]{"Avery Patel", "4", "Clean room and quick checkout.", "2026-07-20"}
-        ));
+
+        guestColumn.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getReservation().getGuest().getName()));
+        ratingColumn.setCellValueFactory(d -> new SimpleStringProperty(String.valueOf(d.getValue().getRating())));
+        sentimentColumn.setCellValueFactory(d -> new SimpleStringProperty(sentimentOf(d.getValue())));
+        commentColumn.setCellValueFactory(d -> new SimpleStringProperty(
+                d.getValue().getComment() == null ? "" : d.getValue().getComment()));
+        dateColumn.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getCreatedAt().toString()));
+
+        loadFeedback();
+    }
+
+    /** Simple ratings-based sentiment tag: 4-5 Positive, 3 Neutral, 1-2 Negative. */
+    private String sentimentOf(Feedback feedback) {
+        if (feedback.getRating() >= 4) {
+            return "Positive";
+        }
+        if (feedback.getRating() == 3) {
+            return "Neutral";
+        }
+        return "Negative";
     }
 
     @FXML
     public void loadFeedback() {
-        feedbackTable.refresh();
+        List<Feedback> all = feedbackRepository.findAll();
+        feedbackTable.setItems(FXCollections.observableArrayList(all));
+        updateAverageRating(all);
     }
 
     @FXML
-    public void viewFeedback() {
-        String guest = guestFilterField.getText().trim().toLowerCase();
-        if (guest.isBlank()) {
-            loadFeedback();
-            return;
-        }
-        feedbackTable.setItems(FXCollections.observableArrayList(
-                feedbackTable.getItems().filtered(row -> row[0].toLowerCase().contains(guest))
-        ));
+    private void viewFeedback() {
+        String guest = guestFilterField.getText() == null ? "" : guestFilterField.getText().trim().toLowerCase();
+        String rating = ratingComboBox.getValue();
+        String sentiment = sentimentComboBox.getValue();
+        LocalDate date = datePicker.getValue();
+
+        List<Feedback> filtered = feedbackRepository.findAll().stream()
+                .filter(f -> guest.isEmpty() || f.getReservation().getGuest().getName().toLowerCase().contains(guest))
+                .filter(f -> rating == null || rating.equals("Any") || rating.equals(String.valueOf(f.getRating())))
+                .filter(f -> sentiment == null || sentiment.equals("Any") || sentiment.equals(sentimentOf(f)))
+                .filter(f -> date == null || date.equals(f.getCreatedAt()))
+                .collect(Collectors.toList());
+
+        feedbackTable.setItems(FXCollections.observableArrayList(filtered));
+        updateAverageRating(filtered);
+    }
+
+    @FXML
+    private void clearFilters() {
+        guestFilterField.clear();
+        ratingComboBox.getSelectionModel().selectFirst();
+        sentimentComboBox.getSelectionModel().selectFirst();
+        datePicker.setValue(null);
+        loadFeedback();
     }
 
     @FXML
     private void exportFeedback() {
-        feedbackTable.getItems().add(new String[]{"System", "-", "PDF export clicked for M2 demo.", "Now"});
+        // TODO Phase 9: real CSV export of the currently filtered feedback table.
     }
 
-    @SuppressWarnings("unchecked")
-    private void configureFeedbackTable() {
-        for (int i = 0; i < feedbackTable.getColumns().size(); i++) {
-            final int index = i;
-            TableColumn<String[], String> column =
-                    (TableColumn<String[], String>) feedbackTable.getColumns().get(i);
-            column.setCellValueFactory(data -> new SimpleStringProperty(data.getValue()[index]));
+    private void updateAverageRating(List<Feedback> feedbackList) {
+        if (feedbackList.isEmpty()) {
+            averageRatingLabel.setText("No feedback yet.");
+            return;
         }
+        double average = feedbackList.stream().mapToInt(Feedback::getRating).average().orElse(0);
+        averageRatingLabel.setText(String.format("Average rating: %.1f★ (%d review%s)",
+                average, feedbackList.size(), feedbackList.size() == 1 ? "" : "s"));
     }
 }

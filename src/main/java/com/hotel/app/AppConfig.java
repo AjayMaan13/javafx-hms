@@ -6,6 +6,7 @@ import com.hotel.repository.AddonRepository;
 import com.hotel.repository.AdminUserRepository;
 import com.hotel.repository.AuditLogRepository;
 import com.hotel.repository.BillingRepository;
+import com.hotel.repository.FeedbackRepository;
 import com.hotel.repository.GuestRepository;
 import com.hotel.repository.LoyaltyAccountRepository;
 import com.hotel.repository.LoyaltyConfigRepository;
@@ -20,6 +21,7 @@ import com.hotel.security.BCryptPasswordHasher;
 import com.hotel.service.ActivityLogService;
 import com.hotel.service.BillingService;
 import com.hotel.service.DiscountService;
+import com.hotel.service.FeedbackService;
 import com.hotel.service.LoyaltyService;
 import com.hotel.service.PricingService;
 import com.hotel.service.ReservationService;
@@ -45,6 +47,7 @@ public class AppConfig {
     private final LoyaltyConfigRepository loyaltyConfigRepository = new LoyaltyConfigRepository();
     private final LoyaltyTransactionRepository loyaltyTransactionRepository = new LoyaltyTransactionRepository();
     private final WaitlistRepository waitlistRepository = new WaitlistRepository();
+    private final FeedbackRepository feedbackRepository = new FeedbackRepository();
 
     private final BCryptPasswordHasher passwordHasher = new BCryptPasswordHasher();
     private final LoggerService loggerService = LoggerService.getInstance();
@@ -66,6 +69,8 @@ public class AppConfig {
     private final AuthService authService = new AuthService(adminUserRepository, passwordHasher);
     private final ActivityLogService activityLogService = new ActivityLogService(auditLogRepository, loggerService);
     private final DiscountService discountService = new DiscountService(billingRepository, new DiscountPolicy());
+    private final FeedbackService feedbackService = new FeedbackService(
+            reservationRepository, guestRepository, feedbackRepository, billingService);
 
     private final DataSeeder dataSeeder = new DataSeeder(roomRepository, addonRepository, adminUserRepository,
             loyaltyConfigRepository, passwordHasher);
@@ -98,12 +103,20 @@ public class AppConfig {
         return discountService;
     }
 
+    public FeedbackService getFeedbackService() {
+        return feedbackService;
+    }
+
     public RoomAvailabilityPublisher getRoomAvailabilityPublisher() {
         return roomAvailabilityPublisher;
     }
 
     public WaitlistRepository getWaitlistRepository() {
         return waitlistRepository;
+    }
+
+    public FeedbackRepository getFeedbackRepository() {
+        return feedbackRepository;
     }
 
     public AddonRepository getAddonRepository() {

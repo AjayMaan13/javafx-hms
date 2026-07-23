@@ -18,5 +18,6 @@
         <Label text="• Check-out by 11:00 AM" wrapText="true" />
 
         <Button onAction="#handleStartBooking" styleClass="primary-btn" text="Start Booking  →" />
+        <Button onAction="#handleLeaveFeedback" styleClass="secondary-btn" text="Leave Feedback" />
     </VBox>
 </StackPane>

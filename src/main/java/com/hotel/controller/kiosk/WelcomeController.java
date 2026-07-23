@@ -16,4 +16,9 @@ public class WelcomeController implements KioskStepController {
         shell.getDraft().reset();
         shell.goNext();
     }
+
+    @FXML
+    private void handleLeaveFeedback() {
+        shell.showFeedback();
+    }
 }

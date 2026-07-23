@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Kiosk feedback: guest looks up a checked-out, fully-settled stay by email, then rates
+     and comments. Not part of the booking-wizard step list; reachable from Welcome. -->
+<BorderPane fx:controller="com.hotel.controller.kiosk.FeedbackController"
+            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="20.0">
+            <padding>
+                <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+            </padding>
+
+            <Label styleClass="page-title" text="How was your stay?" />
+            <Label styleClass="subtitle" text="Look up your stay by email to leave a rating and comment." wrapText="true" />
+
+            <VBox maxWidth="460.0" spacing="14.0" styleClass="card">
+                <GridPane hgap="14.0" vgap="10.0">
+                    <Label styleClass="field-label" text="Email" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <TextField fx:id="emailField" prefWidth="240.0" promptText="you@example.com"
+                               GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                </GridPane>
+                <HBox>
+                    <Button styleClass="primary-btn" text="Find My Stay" onAction="#handleFindStay" />
+                </HBox>
+            </VBox>
+
+            <VBox fx:id="stayBox" maxWidth="460.0" spacing="14.0" styleClass="card" managed="false" visible="false">
+                <Label styleClass="field-label" text="Select your stay" />
+                <ComboBox fx:id="reservationCombo" prefWidth="400.0" />
+
+                <Label styleClass="field-label" text="Rating" />
+                <ComboBox fx:id="ratingCombo" prefWidth="140.0" promptText="1–5 stars" />
+
+                <Label styleClass="field-label" text="Comments" />
+                <TextArea fx:id="commentArea" prefRowCount="4" wrapText="true" promptText="Tell us about your stay (optional)" />
+
+                <HBox>
+                    <Button styleClass="primary-btn" text="Submit Feedback" onAction="#handleSubmit" />
+                </HBox>
+            </VBox>
+
+            <VBox fx:id="confirmationBox" alignment="CENTER" maxWidth="460.0" spacing="10.0" styleClass="card"
+                  managed="false" visible="false">
+                <Label style="-fx-font-size: 40px; -fx-text-fill: #2e7d32;" text="✓" />
+                <Label styleClass="page-title" text="Thank you!" />
+                <Label styleClass="subtitle" text="Your feedback has been submitted." />
+            </VBox>
+
+            <Label fx:id="messageLabel" styleClass="error-text" wrapText="true" />
+
+            <Button styleClass="secondary-btn" text="←  Back to Welcome" onAction="#handleBack" />
+        </VBox>
+    </center>
+</BorderPane>

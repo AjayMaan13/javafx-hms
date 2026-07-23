@@ -13,8 +13,9 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!-- ADMIN SCREEN 7 content only: Feedback view. Header/side-nav now live once in
-     AdminShell.fxml. Post-checkout only; filters by rating/date/sentiment/guest. -->
+<!-- ADMIN SCREEN 7 content only: Feedback view. Header/side-nav live once in
+     AdminShell.fxml. Real data from FeedbackRepository; only guests who have checked out
+     and settled their balance can submit (enforced by FeedbackService, kiosk side). -->
 <VBox spacing="16.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.hotel.controller.admin.FeedbackViewController">
     <padding>
@@ -22,9 +23,9 @@
     </padding>
 
     <Label styleClass="page-title" text="Guest Feedback" />
-    <Label styleClass="subtitle" text="Only shows feedback submitted after checkout." />
+    <Label styleClass="subtitle" text="Only shows feedback submitted after checkout and full settlement." />
 
-    <!-- Filter and export controls -->
+    <!-- Filter controls -->
     <VBox spacing="14.0" styleClass="card">
         <GridPane hgap="18.0" vgap="10.0">
             <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
@@ -45,18 +46,21 @@
             </VBox>
         </GridPane>
         <HBox alignment="CENTER_RIGHT" spacing="12.0">
+            <Label fx:id="averageRatingLabel" styleClass="price-tag" />
             <Region HBox.hgrow="ALWAYS" />
             <Button minWidth="120.0" styleClass="primary-btn" text="Filter" onAction="#viewFeedback" />
-            <Button fx:id="exportFeedbackPdfButton" minWidth="150.0" styleClass="secondary-btn" text="Export PDF" onAction="#exportFeedback" />
+            <Button minWidth="120.0" styleClass="secondary-btn" text="Clear" onAction="#clearFilters" />
+            <Button fx:id="exportFeedbackPdfButton" minWidth="150.0" styleClass="secondary-btn" text="Export" onAction="#exportFeedback" />
         </HBox>
     </VBox>
 
     <TableView fx:id="feedbackTable" prefHeight="320.0" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn prefWidth="160.0" text="Guest" />
-            <TableColumn prefWidth="80.0" text="Rating" />
-            <TableColumn prefWidth="320.0" text="Comment" />
-            <TableColumn prefWidth="110.0" text="Date" />
+            <TableColumn fx:id="guestColumn" prefWidth="160.0" text="Guest" />
+            <TableColumn fx:id="ratingColumn" prefWidth="70.0" text="Rating" />
+            <TableColumn fx:id="sentimentColumn" prefWidth="90.0" text="Sentiment" />
+            <TableColumn fx:id="commentColumn" prefWidth="290.0" text="Comment" />
+            <TableColumn fx:id="dateColumn" prefWidth="110.0" text="Date" />
         </columns>
     </TableView>
 </VBox>

@@ -94,6 +94,31 @@ public class KioskShellController {
         showStep(0);
     }
 
+    /**
+     * Feedback is a separate flow from the booking wizard (not part of the indexed step
+     * list) — reachable from Welcome, returns to Welcome when done.
+     */
+    public void showFeedback() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/kiosk/feedback.fxml"));
+            Parent node = loader.load();
+
+            KioskStepController controller = loader.getController();
+            controller.init(this, draft);
+
+            stepContainer.getChildren().setAll(node);
+            stepLabel.setText("Guest Feedback");
+
+            controller.onShow();
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to load feedback screen", e);
+        }
+    }
+
+    public void returnToWelcome() {
+        showStep(0);
+    }
+
     private void showStep(int index) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/kiosk/" + STEP_FILES.get(index)));
