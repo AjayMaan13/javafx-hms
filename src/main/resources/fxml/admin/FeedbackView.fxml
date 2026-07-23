@@ -63,4 +63,6 @@
             <TableColumn fx:id="dateColumn" prefWidth="110.0" text="Date" />
         </columns>
     </TableView>
+
+    <Label fx:id="messageLabel" styleClass="error-text" wrapText="true" />
 </VBox>

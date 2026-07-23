@@ -2,6 +2,7 @@ package com.hotel.controller.admin;
 
 import com.hotel.model.Feedback;
 import com.hotel.repository.FeedbackRepository;
+import com.hotel.util.CsvExporter;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -12,7 +13,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.DatePicker;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +32,8 @@ public class FeedbackViewController {
     private DatePicker datePicker;
     @FXML
     private Label averageRatingLabel;
+    @FXML
+    private Label messageLabel;
 
     @FXML
     private TableView<Feedback> feedbackTable;
@@ -43,6 +49,7 @@ public class FeedbackViewController {
     private TableColumn<Feedback, String> dateColumn;
 
     private final FeedbackRepository feedbackRepository = new FeedbackRepository();
+    private final CsvExporter csvExporter = new CsvExporter();
 
     @FXML
     private void initialize() {
@@ -108,7 +115,41 @@ public class FeedbackViewController {
 
     @FXML
     private void exportFeedback() {
-        // TODO Phase 9: real CSV export of the currently filtered feedback table.
+        List<Feedback> visible = feedbackTable.getItems();
+        if (visible.isEmpty()) {
+            messageLabel.setText("No feedback to export — adjust the filters or check back later.");
+            return;
+        }
+
+        List<String> headers = List.of("Reservation ID", "Guest", "Rating", "Comment", "Date", "Sentiment");
+        List<List<String>> rows = new ArrayList<>();
+        for (Feedback feedback : visible) {
+            rows.add(List.of(
+                    feedback.getReservation().getId().toString(),
+                    feedback.getReservation().getGuest().getName(),
+                    String.valueOf(feedback.getRating()),
+                    feedback.getComment() == null ? "" : feedback.getComment(),
+                    feedback.getCreatedAt().toString(),
+                    sentimentOf(feedback)));
+        }
+
+        // Summary rows: average rating + common-tag counts (per the brief's Feedback
+        // summary spec), appended after the data as a lightweight trailer.
+        double average = visible.stream().mapToInt(Feedback::getRating).average().orElse(0);
+        rows.add(List.of("", "", "", "", "", ""));
+        rows.add(List.of("Average rating", String.format("%.2f", average), "", "", "", ""));
+        for (String tag : List.of("Positive", "Neutral", "Negative")) {
+            long count = visible.stream().filter(f -> sentimentOf(f).equals(tag)).count();
+            rows.add(List.of(tag + " count", String.valueOf(count), "", "", "", ""));
+        }
+
+        try {
+            Path path = Path.of("exports", "feedback_summary_" + System.currentTimeMillis() + ".csv");
+            csvExporter.export(path, headers, rows);
+            messageLabel.setText("Exported to " + path.toAbsolutePath());
+        } catch (IOException e) {
+            messageLabel.setText("Export failed: " + e.getMessage());
+        }
     }
 
     private void updateAverageRating(List<Feedback> feedbackList) {

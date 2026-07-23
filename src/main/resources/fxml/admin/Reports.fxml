@@ -5,15 +5,15 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!-- ADMIN SCREEN 8 content only: Reports. Header/side-nav now live once in
-     AdminShell.fxml. Revenue / occupancy / activity-log tables, exportable to
-     CSV / PDF / TXT (no charts — table only, per the brief). -->
+<!-- ADMIN SCREEN 8 content only: Reports. Header/side-nav live once in AdminShell.fxml.
+     Revenue / occupancy / activity-log tables (no charts, per brief), each row real,
+     each exportable to CSV/PDF/TXT. Table columns rebuild per report type in the
+     controller, since each report has genuinely different columns. -->
 <VBox spacing="16.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.hotel.controller.admin.ReportsController">
     <padding>
@@ -37,18 +37,13 @@
             <DatePicker fx:id="toDatePicker" prefWidth="140.0" />
         </VBox>
         <Region HBox.hgrow="ALWAYS" />
-        <Button styleClass="primary-btn" text="Generate" onAction="#generateDailyReport" />
+        <Button styleClass="primary-btn" text="Generate" onAction="#generateReport" />
     </HBox>
 
-    <!-- Tabular report output (no charts, per brief) -->
-    <TableView fx:id="reportTable" prefHeight="300.0" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn prefWidth="140.0" text="Date" />
-            <TableColumn prefWidth="180.0" text="Description" />
-            <TableColumn prefWidth="120.0" text="Amount" />
-            <TableColumn prefWidth="120.0" text="Rooms Occupied" />
-        </columns>
-    </TableView>
+    <!-- Tabular report output (no charts, per brief) — columns rebuilt per report type -->
+    <TableView fx:id="reportTable" prefHeight="300.0" VBox.vgrow="ALWAYS" />
+
+    <Label fx:id="messageLabel" styleClass="error-text" wrapText="true" />
 
     <HBox alignment="CENTER_RIGHT" spacing="12.0">
         <Button styleClass="secondary-btn" text="Export CSV" onAction="#exportCsv" />

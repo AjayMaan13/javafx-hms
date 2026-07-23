@@ -24,11 +24,15 @@ import com.hotel.service.DiscountService;
 import com.hotel.service.FeedbackService;
 import com.hotel.service.LoyaltyService;
 import com.hotel.service.PricingService;
+import com.hotel.service.ReportingService;
 import com.hotel.service.ReservationService;
 import com.hotel.service.pricing.PricingStrategy;
 import com.hotel.service.pricing.StandardPricingStrategy;
+import com.hotel.util.CsvExporter;
 import com.hotel.util.DataSeeder;
 import com.hotel.util.LoggerService;
+import com.hotel.util.PdfExporter;
+import com.hotel.util.TxtExporter;
 
 public class AppConfig {
 
@@ -71,6 +75,12 @@ public class AppConfig {
     private final DiscountService discountService = new DiscountService(billingRepository, new DiscountPolicy());
     private final FeedbackService feedbackService = new FeedbackService(
             reservationRepository, guestRepository, feedbackRepository, billingService);
+    private final ReportingService reportingService = new ReportingService(
+            reservationRepository, roomRepository, billingRepository, auditLogRepository);
+
+    private final CsvExporter csvExporter = new CsvExporter();
+    private final TxtExporter txtExporter = new TxtExporter();
+    private final PdfExporter pdfExporter = new PdfExporter();
 
     private final DataSeeder dataSeeder = new DataSeeder(roomRepository, addonRepository, adminUserRepository,
             loyaltyConfigRepository, passwordHasher);
@@ -105,6 +115,22 @@ public class AppConfig {
 
     public FeedbackService getFeedbackService() {
         return feedbackService;
+    }
+
+    public ReportingService getReportingService() {
+        return reportingService;
+    }
+
+    public CsvExporter getCsvExporter() {
+        return csvExporter;
+    }
+
+    public TxtExporter getTxtExporter() {
+        return txtExporter;
+    }
+
+    public PdfExporter getPdfExporter() {
+        return pdfExporter;
     }
 
     public RoomAvailabilityPublisher getRoomAvailabilityPublisher() {
