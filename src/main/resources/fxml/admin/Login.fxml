@@ -74,6 +74,11 @@
                         styleClass="primary-btn"
                         onAction="#handleLogin"/>
 
+                <Button text="← Back to Kiosk"
+                        maxWidth="Infinity"
+                        styleClass="secondary-btn"
+                        onAction="#handleBackToKiosk"/>
+
             </VBox>
 
         </StackPane>

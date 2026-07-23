@@ -6,7 +6,6 @@ import com.hotel.model.AdminUser;
 import com.hotel.security.AuthService;
 import com.hotel.service.ActivityLogService;
 import com.hotel.util.LoggerService;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -35,6 +34,12 @@ public class LoginController {
         this.router = router;
     }
 
+    /** "Back to Kiosk" link — for staff who reached this screen by accident. */
+    @FXML
+    private void handleBackToKiosk() {
+        router.showKiosk();
+    }
+
     /**
      * Called by the SceneRouter each time the login view is shown — same AppConfig instance
      * every time, so the whole app run shares one composition root rather than rebuilding it
@@ -48,7 +53,7 @@ public class LoginController {
     }
 
     @FXML
-    private void handleLogin(ActionEvent event) {
+    private void handleLogin() {
 
         String username = usernameField.getText().trim();
         String password = passwordField.getText();
