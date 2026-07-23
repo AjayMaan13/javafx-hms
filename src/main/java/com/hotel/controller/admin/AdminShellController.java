@@ -42,7 +42,7 @@ public class AdminShellController {
     private StackPane contentContainer;
 
     private AdminUser currentAdmin;
-    private Reservation selectedReservationForDetail;
+    private Reservation selectedReservation;
 
     @FXML
     private void initialize() {
@@ -57,18 +57,32 @@ public class AdminShellController {
         return currentAdmin;
     }
 
+    /**
+     * The reservation the admin is currently working on. Set by double-clicking a Dashboard
+     * row; read by the Reservation Detail, Payments, and Checkout screens. Persists across
+     * navigation so you can open a reservation, then jump to its Payments/Checkout screen.
+     * Null on fresh login → those screens show an empty state.
+     */
+    public void setSelectedReservation(Reservation reservation) {
+        this.selectedReservation = reservation;
+    }
+
+    public Reservation getSelectedReservation() {
+        return selectedReservation;
+    }
+
     /** Opens Reservation Detail pre-loaded with the given reservation (e.g. from a Dashboard row). */
     public void openReservationDetail(Reservation reservation) {
-        this.selectedReservationForDetail = reservation;
+        this.selectedReservation = reservation;
         navigateTo("reservations");
     }
 
-    /** Consumed by ReservationDetailController on load; cleared after reading so a later
-     *  direct nav to "Reservations" via the side menu correctly shows the empty state. */
-    public Reservation consumeSelectedReservationForDetail() {
-        Reservation reservation = this.selectedReservationForDetail;
-        this.selectedReservationForDetail = null;
-        return reservation;
+    public void openPayments() {
+        navigateTo("payments");
+    }
+
+    public void openCheckout() {
+        navigateTo("checkout");
     }
 
     @FXML

@@ -81,12 +81,22 @@ public class ReservationDetailController implements AdminScreenController {
     @Override
     public void setShell(AdminShellController shell) {
         this.shell = shell;
-        Reservation selected = shell.consumeSelectedReservationForDetail();
+        Reservation selected = shell.getSelectedReservation();
         if (selected == null) {
             showEmptyState();
         } else {
             loadReservation(selected.getId());
         }
+    }
+
+    @FXML
+    private void goToPayments() {
+        shell.openPayments();
+    }
+
+    @FXML
+    private void goToCheckout() {
+        shell.openCheckout();
     }
 
     @FXML

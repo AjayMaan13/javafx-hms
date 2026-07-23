@@ -40,8 +40,11 @@ class ReservationServiceTest {
                 new com.hotel.security.BCryptPasswordHasher()).seedIfEmpty();
 
         PricingService pricingService = new PricingService(new StandardPricingStrategy());
+        BillingService billingService = new BillingService(
+                new com.hotel.repository.BillingRepository(), new com.hotel.repository.PaymentRepository(),
+                reservationRepository, roomRepository);
         return new ReservationService(guestRepository, roomRepository, reservationRepository, addonRepository,
-                pricingService);
+                pricingService, billingService);
     }
 
     private BookingDraft validSingleGuestDraft(String email, LocalDate checkIn, LocalDate checkOut) {

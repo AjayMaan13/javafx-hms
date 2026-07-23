@@ -29,4 +29,27 @@ public class BillingRepository extends BaseRepository<Billing, UUID> {
             em.close();
         }
     }
+
+    /**
+     * Creates a Billing for an existing reservation. Re-fetches the reservation inside the
+     * transaction (detached-entity pattern) so the OneToOne FK is written against a managed
+     * entity.
+     */
+    public Billing createFor(UUID reservationId, double totalDue) {
+        return inTransaction(em -> {
+            Reservation managed = em.find(Reservation.class, reservationId);
+            Billing billing = new Billing(managed, totalDue);
+            em.persist(billing);
+            return billing;
+        });
+    }
+
+    public Billing updateBalances(UUID billingId, double totalPaid, double balance) {
+        return inTransaction(em -> {
+            Billing billing = em.find(Billing.class, billingId);
+            billing.setTotalPaid(totalPaid);
+            billing.setBalance(balance);
+            return billing;
+        });
+    }
 }

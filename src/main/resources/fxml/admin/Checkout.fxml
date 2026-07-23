@@ -9,41 +9,43 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!-- ADMIN SCREEN 5 content only: Checkout. Header/side-nav now live once in
-     AdminShell.fxml. Final bill, settle balance, mark rooms available. -->
+<!-- ADMIN SCREEN 5 content only: Checkout. Header/side-nav live once in AdminShell.fxml.
+     Operates on the reservation selected from the Dashboard. Blocks while any balance
+     remains; on success marks the reservation checked out and its rooms available. -->
 <VBox alignment="TOP_CENTER" spacing="20.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.hotel.controller.admin.CheckoutController">
     <padding>
         <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
     </padding>
 
-    <Label styleClass="page-title" text="Checkout — Reservation #HMS-2026-00417" />
-    <Label styleClass="subtitle" text="Guest: Jordan Smith · Room 204 (Double) · 2 nights" />
+    <Label fx:id="pageTitleLabel" styleClass="page-title" text="Checkout" />
+    <Label fx:id="emptyStateLabel" styleClass="subtitle"
+           text="Select a reservation from the Dashboard (double-click a row), then choose Checkout."
+           managed="false" visible="false" wrapText="true" />
 
-    <VBox maxWidth="420.0" spacing="10.0" styleClass="card">
-        <GridPane hgap="40.0" vgap="10.0">
-            <Label text="Room + Add-ons" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-            <Label text="\$274.00" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+    <VBox fx:id="checkoutContent" alignment="TOP_CENTER" spacing="20.0">
+        <Label fx:id="summaryLabel" styleClass="subtitle" />
 
-            <Label text="Tax (13%)" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <Label text="\$35.62" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <VBox maxWidth="420.0" spacing="10.0" styleClass="card">
+            <GridPane hgap="40.0" vgap="10.0">
+                <Label text="Total Bill" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <Label fx:id="totalDueLabel" GridPane.columnIndex="1" GridPane.rowIndex="0" text="$0.00" />
 
-            <Label text="Total Bill" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-            <Label text="\$299.62" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <Label text="Already Paid" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <Label fx:id="totalPaidLabel" GridPane.columnIndex="1" GridPane.rowIndex="1" text="$0.00" />
+            </GridPane>
 
-            <Label text="Already Paid" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-            <Label text="\$150.00" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-        </GridPane>
+            <Separator />
 
-        <Separator />
+            <HBox>
+                <Label styleClass="balance-due" style="-fx-font-size: 18px;" text="Balance Due" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="balanceLabel" styleClass="balance-due" style="-fx-font-size: 18px;" text="$0.00" />
+            </HBox>
+        </VBox>
 
-        <HBox>
-            <Label styleClass="balance-due" style="-fx-font-size: 18px;" text="Balance Due" />
-            <Region HBox.hgrow="ALWAYS" />
-            <Label styleClass="balance-due" style="-fx-font-size: 18px;" text="\$149.62" />
-        </HBox>
+        <Button fx:id="checkoutButton" styleClass="primary-btn" text="Settle Balance &amp; Check Out"
+                onAction="#checkoutGuest" />
+        <Label fx:id="messageLabel" styleClass="subtitle" wrapText="true" />
     </VBox>
-
-    <Button styleClass="primary-btn" text="Settle Balance &amp; Check Out" onAction="#checkoutGuest" />
-    <Label fx:id="messageLabel" styleClass="subtitle" text="Checking out marks Room 204 as available." />
 </VBox>

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
-<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
@@ -14,9 +12,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<!-- ADMIN SCREEN 4 content only: Payments. Header/side-nav now live once in
-     AdminShell.fxml. Cash/card/loyalty, deposits, partial payments, refunds;
-     paid vs outstanding balance. -->
+<!-- ADMIN SCREEN 4 content only: Payments. Header/side-nav live once in AdminShell.fxml.
+     Operates on the reservation selected from the Dashboard. Discount controls are
+     wired in Phase 6; this phase makes payments/refunds and the balance summary real. -->
 <ScrollPane fitToWidth="true" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.hotel.controller.admin.PaymentsController">
     <content>
@@ -25,102 +23,81 @@
                 <Insets bottom="20.0" left="24.0" right="24.0" top="20.0" />
             </padding>
 
-            <Label styleClass="page-title" text="Payments - Reservation #HMS-2026-00417" />
+            <Label fx:id="pageTitleLabel" styleClass="page-title" text="Payments" />
+            <Label fx:id="emptyStateLabel" styleClass="subtitle"
+                   text="Select a reservation from the Dashboard (double-click a row), then choose Payments."
+                   managed="false" visible="false" wrapText="true" />
 
-            <!-- Balance summary -->
-            <HBox spacing="40.0" styleClass="card">
-                <VBox spacing="2.0">
-                    <Label styleClass="field-label" text="Total Due" />
-                    <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="\$299.62" />
-                </VBox>
-                <VBox spacing="2.0">
-                    <Label styleClass="field-label" text="Total Paid" />
-                    <Label styleClass="price-tag" style="-fx-font-size: 18px;" text="\$150.00" />
-                </VBox>
-                <VBox spacing="2.0">
-                    <Label styleClass="field-label" text="Outstanding Balance" />
-                    <Label styleClass="balance-due" style="-fx-font-size: 18px;" text="\$149.62" />
-                </VBox>
-            </HBox>
-
-            <!-- Role-based discount controls -->
-            <VBox spacing="10.0" styleClass="card">
-                <Label styleClass="field-label" text="Apply Role-Based Discount" />
-                <GridPane hgap="20.0" vgap="10.0">
-                    <Label styleClass="field-label" text="User Role" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                    <ComboBox fx:id="roleComboBox" prefWidth="180.0" promptText="Select role" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                        <items>
-                            <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Admin - max 15%" />
-                                <String fx:value="Manager - max 30%" />
-                            </FXCollections>
-                        </items>
-                    </ComboBox>
-
-                    <Label styleClass="field-label" text="Discount Option" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-                    <ComboBox fx:id="discountComboBox" prefWidth="190.0" promptText="Choose discount" GridPane.columnIndex="3" GridPane.rowIndex="0">
-                        <items>
-                            <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="5% Courtesy Discount" />
-                                <String fx:value="10% Loyalty Discount" />
-                                <String fx:value="15% Admin Maximum" />
-                                <String fx:value="30% Manager Maximum" />
-                            </FXCollections>
-                        </items>
-                    </ComboBox>
-
-                    <Label styleClass="field-label" text="Custom %" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                    <TextField fx:id="customDiscountField" prefWidth="180.0" promptText="0 - 30" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-
-                    <Label styleClass="field-label" text="Applied By" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                    <TextField fx:id="appliedByField" prefWidth="190.0" promptText="Employee name / ID" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                </GridPane>
-                <Label styleClass="error-text"
-                       text="System rule: Admin discounts cannot exceed 15%; Manager discounts cannot exceed 30%." />
-                <HBox spacing="12.0">
-                    <Button styleClass="primary-btn" text="Apply Discount" onAction="#applyDiscount" />
-                    <Button styleClass="secondary-btn" text="Clear Discount" onAction="#clearDiscount" />
+            <VBox fx:id="paymentsContent" spacing="16.0">
+                <!-- Balance summary -->
+                <HBox spacing="40.0" styleClass="card">
+                    <VBox spacing="2.0">
+                        <Label styleClass="field-label" text="Total Due" />
+                        <Label fx:id="totalDueLabel" style="-fx-font-size: 18px; -fx-font-weight: bold;" text="$0.00" />
+                    </VBox>
+                    <VBox spacing="2.0">
+                        <Label styleClass="field-label" text="Total Paid" />
+                        <Label fx:id="totalPaidLabel" styleClass="price-tag" style="-fx-font-size: 18px;" text="$0.00" />
+                    </VBox>
+                    <VBox spacing="2.0">
+                        <Label styleClass="field-label" text="Outstanding Balance" />
+                        <Label fx:id="balanceLabel" styleClass="balance-due" style="-fx-font-size: 18px;" text="$0.00" />
+                    </VBox>
                 </HBox>
+
+                <!-- Role-based discount controls (wired in Phase 6) -->
+                <VBox spacing="10.0" styleClass="card">
+                    <Label styleClass="field-label" text="Apply Role-Based Discount" />
+                    <GridPane hgap="20.0" vgap="10.0">
+                        <Label styleClass="field-label" text="User Role" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                        <ComboBox fx:id="roleComboBox" prefWidth="180.0" promptText="Select role" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                        <Label styleClass="field-label" text="Discount Option" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                        <ComboBox fx:id="discountComboBox" prefWidth="190.0" promptText="Choose discount" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+
+                        <Label styleClass="field-label" text="Custom %" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                        <TextField fx:id="customDiscountField" prefWidth="180.0" promptText="0 - 30" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                        <Label styleClass="field-label" text="Applied By" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <TextField fx:id="appliedByField" prefWidth="190.0" promptText="Employee name / ID" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                    </GridPane>
+                    <Label styleClass="subtitle"
+                           text="Role-based discount caps (Admin 15% / Manager 30%) are enforced in a later phase." />
+                    <HBox spacing="12.0">
+                        <Button styleClass="primary-btn" text="Apply Discount" onAction="#applyDiscount" />
+                        <Button styleClass="secondary-btn" text="Clear Discount" onAction="#clearDiscount" />
+                    </HBox>
+                </VBox>
+
+                <!-- New payment / refund form -->
+                <VBox spacing="10.0" styleClass="card">
+                    <Label styleClass="field-label" text="Record Payment / Refund" />
+                    <GridPane hgap="20.0" vgap="10.0">
+                        <Label styleClass="field-label" text="Method" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                        <ComboBox fx:id="methodComboBox" prefWidth="160.0" promptText="Cash / Card / Loyalty"
+                                  GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                        <Label styleClass="field-label" text="Amount" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                        <TextField fx:id="amountField" prefWidth="140.0" promptText="0.00" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+                    </GridPane>
+                    <Label styleClass="subtitle" text="A deposit or partial payment is just an amount less than the balance." />
+                    <HBox spacing="12.0">
+                        <Button styleClass="primary-btn" text="Add Payment" onAction="#processPayment" />
+                        <Button styleClass="secondary-btn" text="Issue Refund" onAction="#refundPayment" />
+                    </HBox>
+                    <Label fx:id="messageLabel" styleClass="error-text" text="" wrapText="true" />
+                </VBox>
+
+                <!-- Payment history -->
+                <Label styleClass="field-label" text="Payment History" />
+                <TableView fx:id="paymentTable" prefHeight="200.0">
+                    <columns>
+                        <TableColumn fx:id="paymentDateColumn" prefWidth="200.0" text="Date/Time" />
+                        <TableColumn fx:id="paymentMethodColumn" prefWidth="140.0" text="Method" />
+                        <TableColumn fx:id="paymentAmountColumn" prefWidth="140.0" text="Amount" />
+                    </columns>
+                </TableView>
             </VBox>
-
-            <!-- New payment / refund form -->
-            <VBox spacing="10.0" styleClass="card">
-                <Label styleClass="field-label" text="Record Payment / Refund" />
-                <GridPane hgap="20.0" vgap="10.0">
-                    <Label styleClass="field-label" text="Method" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                    <ComboBox fx:id="methodComboBox" prefWidth="160.0" promptText="Cash / Card / Loyalty"
-                              GridPane.columnIndex="1" GridPane.rowIndex="0" />
-
-                    <Label styleClass="field-label" text="Amount" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-                    <TextField fx:id="amountField" prefWidth="140.0" promptText="0.00" GridPane.columnIndex="3" GridPane.rowIndex="0" />
-                </GridPane>
-                <Label styleClass="subtitle" text="Enter a negative amount to record a refund." />
-                <HBox spacing="12.0">
-                    <Button styleClass="primary-btn" text="Add Payment" onAction="#processPayment" />
-                    <Button styleClass="secondary-btn" text="Issue Refund" onAction="#refundPayment" />
-                </HBox>
-            </VBox>
-
-            <!-- Payment history -->
-            <Label styleClass="field-label" text="Payment History" />
-            <TableView fx:id="paymentTable" prefHeight="180.0">
-                <columns>
-                    <TableColumn prefWidth="140.0" text="Date/Time" />
-                    <TableColumn prefWidth="120.0" text="Method" />
-                    <TableColumn prefWidth="120.0" text="Amount" />
-                </columns>
-            </TableView>
-
-            <Label styleClass="field-label" text="Discount Audit" />
-            <TableView fx:id="discountAuditTable" prefHeight="120.0">
-                <columns>
-                    <TableColumn prefWidth="140.0" text="Date/Time" />
-                    <TableColumn prefWidth="120.0" text="Role" />
-                    <TableColumn prefWidth="120.0" text="Discount %" />
-                    <TableColumn prefWidth="180.0" text="Applied By" />
-                    <TableColumn prefWidth="220.0" text="Approval / Cap Status" />
-                </columns>
-            </TableView>
         </VBox>
     </content>
 </ScrollPane>

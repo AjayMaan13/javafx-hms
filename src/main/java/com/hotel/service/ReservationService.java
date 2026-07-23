@@ -25,15 +25,17 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final AddonRepository addonRepository;
     private final PricingService pricingService;
+    private final BillingService billingService;
 
     public ReservationService(GuestRepository guestRepository, RoomRepository roomRepository,
                                ReservationRepository reservationRepository, AddonRepository addonRepository,
-                               PricingService pricingService) {
+                               PricingService pricingService, BillingService billingService) {
         this.guestRepository = guestRepository;
         this.roomRepository = roomRepository;
         this.reservationRepository = reservationRepository;
         this.addonRepository = addonRepository;
         this.pricingService = pricingService;
+        this.billingService = billingService;
     }
 
     public Reservation createReservation(BookingDraft draft) {
@@ -50,9 +52,14 @@ public class ReservationService {
         double tax = pricingService.calculateTax(subtotal);
         double total = subtotal + tax;
 
-        return reservationRepository.createWithAssociations(guest, selectedRooms, selectedAddons,
+        Reservation reservation = reservationRepository.createWithAssociations(guest, selectedRooms, selectedAddons,
                 draft.getCheckIn(), draft.getCheckOut(), draft.getAdults(), draft.getChildren(),
                 ReservationStatus.CONFIRMED, subtotal, tax, total);
+
+        // Every confirmed reservation gets a bill (total due, nothing paid yet).
+        billingService.createBillingFor(reservation);
+
+        return reservation;
     }
 
     private void validateOccupancy(BookingDraft draft) {

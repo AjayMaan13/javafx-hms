@@ -47,6 +47,14 @@ public class RoomRepository extends BaseRepository<Room, UUID> {
         }
     }
 
+    public Room updateStatus(UUID roomId, com.hotel.model.enums.RoomStatus status) {
+        return inTransaction(em -> {
+            Room room = em.find(Room.class, roomId);
+            room.setStatus(status);
+            return room;
+        });
+    }
+
     /**
      * Same overlap check as findAvailable, but scoped to one specific room and excluding
      * one reservation's own existing booking — needed when re-saving a reservation's own

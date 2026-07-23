@@ -66,7 +66,10 @@
 
         <Region VBox.vgrow="ALWAYS" />
 
-        <HBox alignment="CENTER_RIGHT" spacing="12.0">
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <Button styleClass="secondary-btn" text="Take Payment  →" onAction="#goToPayments" />
+            <Button styleClass="secondary-btn" text="Check Out  →" onAction="#goToCheckout" />
+            <Region HBox.hgrow="ALWAYS" />
             <ComboBox fx:id="statusComboBox" promptText="Change status" />
             <Button styleClass="danger-btn" text="Cancel Reservation" onAction="#cancelReservation" />
             <Button styleClass="primary-btn" text="Save Changes" onAction="#updateReservation" />

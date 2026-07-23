@@ -3,12 +3,15 @@ package com.hotel.app;
 import com.hotel.repository.AddonRepository;
 import com.hotel.repository.AdminUserRepository;
 import com.hotel.repository.AuditLogRepository;
+import com.hotel.repository.BillingRepository;
 import com.hotel.repository.GuestRepository;
+import com.hotel.repository.PaymentRepository;
 import com.hotel.repository.ReservationRepository;
 import com.hotel.repository.RoomRepository;
 import com.hotel.security.AuthService;
 import com.hotel.security.BCryptPasswordHasher;
 import com.hotel.service.ActivityLogService;
+import com.hotel.service.BillingService;
 import com.hotel.service.PricingService;
 import com.hotel.service.ReservationService;
 import com.hotel.service.pricing.PricingStrategy;
@@ -27,13 +30,17 @@ public class AppConfig {
     private final AddonRepository addonRepository = new AddonRepository();
     private final AdminUserRepository adminUserRepository = new AdminUserRepository();
     private final AuditLogRepository auditLogRepository = new AuditLogRepository();
+    private final BillingRepository billingRepository = new BillingRepository();
+    private final PaymentRepository paymentRepository = new PaymentRepository();
 
     private final BCryptPasswordHasher passwordHasher = new BCryptPasswordHasher();
     private final LoggerService loggerService = LoggerService.getInstance();
 
     private final PricingService pricingService = new PricingService(DEFAULT_PRICING_STRATEGY);
+    private final BillingService billingService = new BillingService(
+            billingRepository, paymentRepository, reservationRepository, roomRepository);
     private final ReservationService reservationService = new ReservationService(
-            guestRepository, roomRepository, reservationRepository, addonRepository, pricingService);
+            guestRepository, roomRepository, reservationRepository, addonRepository, pricingService, billingService);
     private final AuthService authService = new AuthService(adminUserRepository, passwordHasher);
     private final ActivityLogService activityLogService = new ActivityLogService(auditLogRepository, loggerService);
 
@@ -50,6 +57,10 @@ public class AppConfig {
 
     public ReservationService getReservationService() {
         return reservationService;
+    }
+
+    public BillingService getBillingService() {
+        return billingService;
     }
 
     public AddonRepository getAddonRepository() {
