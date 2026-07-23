@@ -32,6 +32,7 @@
             <Button maxWidth="Infinity" onAction="#showReservations" text="Reservations" />
             <Button maxWidth="Infinity" onAction="#showPayments" text="Payments" />
             <Button maxWidth="Infinity" onAction="#showCheckout" text="Checkout" />
+            <Button maxWidth="Infinity" onAction="#showLoyalty" text="Loyalty" />
             <Button maxWidth="Infinity" onAction="#showWaitlist" text="Waitlist" />
             <Button maxWidth="Infinity" onAction="#showFeedback" text="Feedback" />
             <Button maxWidth="Infinity" onAction="#showReports" text="Reports" />

@@ -5,6 +5,9 @@ import com.hotel.repository.AdminUserRepository;
 import com.hotel.repository.AuditLogRepository;
 import com.hotel.repository.BillingRepository;
 import com.hotel.repository.GuestRepository;
+import com.hotel.repository.LoyaltyAccountRepository;
+import com.hotel.repository.LoyaltyConfigRepository;
+import com.hotel.repository.LoyaltyTransactionRepository;
 import com.hotel.repository.PaymentRepository;
 import com.hotel.repository.ReservationRepository;
 import com.hotel.repository.RoomRepository;
@@ -12,6 +15,7 @@ import com.hotel.security.AuthService;
 import com.hotel.security.BCryptPasswordHasher;
 import com.hotel.service.ActivityLogService;
 import com.hotel.service.BillingService;
+import com.hotel.service.LoyaltyService;
 import com.hotel.service.PricingService;
 import com.hotel.service.ReservationService;
 import com.hotel.service.pricing.PricingStrategy;
@@ -32,20 +36,26 @@ public class AppConfig {
     private final AuditLogRepository auditLogRepository = new AuditLogRepository();
     private final BillingRepository billingRepository = new BillingRepository();
     private final PaymentRepository paymentRepository = new PaymentRepository();
+    private final LoyaltyAccountRepository loyaltyAccountRepository = new LoyaltyAccountRepository();
+    private final LoyaltyConfigRepository loyaltyConfigRepository = new LoyaltyConfigRepository();
+    private final LoyaltyTransactionRepository loyaltyTransactionRepository = new LoyaltyTransactionRepository();
 
     private final BCryptPasswordHasher passwordHasher = new BCryptPasswordHasher();
     private final LoggerService loggerService = LoggerService.getInstance();
 
     private final PricingService pricingService = new PricingService(DEFAULT_PRICING_STRATEGY);
+    // LoyaltyService is built before BillingService because BillingService earns points on payment.
+    private final LoyaltyService loyaltyService = new LoyaltyService(
+            loyaltyAccountRepository, loyaltyConfigRepository, loyaltyTransactionRepository, billingRepository);
     private final BillingService billingService = new BillingService(
-            billingRepository, paymentRepository, reservationRepository, roomRepository);
+            billingRepository, paymentRepository, reservationRepository, roomRepository, loyaltyService);
     private final ReservationService reservationService = new ReservationService(
             guestRepository, roomRepository, reservationRepository, addonRepository, pricingService, billingService);
     private final AuthService authService = new AuthService(adminUserRepository, passwordHasher);
     private final ActivityLogService activityLogService = new ActivityLogService(auditLogRepository, loggerService);
 
     private final DataSeeder dataSeeder = new DataSeeder(roomRepository, addonRepository, adminUserRepository,
-            passwordHasher);
+            loyaltyConfigRepository, passwordHasher);
 
     public void seedData() {
         dataSeeder.seedIfEmpty();
@@ -61,6 +71,10 @@ public class AppConfig {
 
     public BillingService getBillingService() {
         return billingService;
+    }
+
+    public LoyaltyService getLoyaltyService() {
+        return loyaltyService;
     }
 
     public AddonRepository getAddonRepository() {

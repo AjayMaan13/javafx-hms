@@ -2,11 +2,13 @@ package com.hotel.util;
 
 import com.hotel.model.Addon;
 import com.hotel.model.AdminUser;
+import com.hotel.model.LoyaltyConfig;
 import com.hotel.model.Room;
 import com.hotel.model.enums.Role;
 import com.hotel.model.enums.RoomType;
 import com.hotel.repository.AddonRepository;
 import com.hotel.repository.AdminUserRepository;
+import com.hotel.repository.LoyaltyConfigRepository;
 import com.hotel.repository.RoomRepository;
 import com.hotel.security.BCryptPasswordHasher;
 import com.hotel.service.RoomFactory;
@@ -16,13 +18,16 @@ public class DataSeeder {
     private final RoomRepository roomRepository;
     private final AddonRepository addonRepository;
     private final AdminUserRepository adminUserRepository;
+    private final LoyaltyConfigRepository loyaltyConfigRepository;
     private final BCryptPasswordHasher passwordHasher;
 
     public DataSeeder(RoomRepository roomRepository, AddonRepository addonRepository,
-                      AdminUserRepository adminUserRepository, BCryptPasswordHasher passwordHasher) {
+                      AdminUserRepository adminUserRepository, LoyaltyConfigRepository loyaltyConfigRepository,
+                      BCryptPasswordHasher passwordHasher) {
         this.roomRepository = roomRepository;
         this.addonRepository = addonRepository;
         this.adminUserRepository = adminUserRepository;
+        this.loyaltyConfigRepository = loyaltyConfigRepository;
         this.passwordHasher = passwordHasher;
     }
 
@@ -44,6 +49,11 @@ public class DataSeeder {
         if (adminUserRepository.findAll().isEmpty()) {
             adminUserRepository.save(new AdminUser("admin", passwordHasher.hash("admin123"), Role.ADMIN));
             adminUserRepository.save(new AdminUser("manager", passwordHasher.hash("manager123"), Role.MANAGER));
+        }
+
+        if (loyaltyConfigRepository.findAll().isEmpty()) {
+            // 1 point per $1 paid; each point redeems for $0.05; redemption caps at 30% of a bill.
+            loyaltyConfigRepository.save(new LoyaltyConfig(1.0, 0.05, 0.30, true));
         }
     }
 

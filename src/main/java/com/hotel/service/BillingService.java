@@ -1,6 +1,7 @@
 package com.hotel.service;
 
 import com.hotel.model.Billing;
+import com.hotel.model.LoyaltyAccount;
 import com.hotel.model.Payment;
 import com.hotel.model.Reservation;
 import com.hotel.model.Room;
@@ -13,6 +14,7 @@ import com.hotel.repository.ReservationRepository;
 import com.hotel.repository.RoomRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public class BillingService {
 
@@ -24,13 +26,16 @@ public class BillingService {
     private final PaymentRepository paymentRepository;
     private final ReservationRepository reservationRepository;
     private final RoomRepository roomRepository;
+    private final LoyaltyService loyaltyService;
 
     public BillingService(BillingRepository billingRepository, PaymentRepository paymentRepository,
-                           ReservationRepository reservationRepository, RoomRepository roomRepository) {
+                           ReservationRepository reservationRepository, RoomRepository roomRepository,
+                           LoyaltyService loyaltyService) {
         this.billingRepository = billingRepository;
         this.paymentRepository = paymentRepository;
         this.reservationRepository = reservationRepository;
         this.roomRepository = roomRepository;
+        this.loyaltyService = loyaltyService;
     }
 
     /** Called when a reservation is confirmed: total_due = total, nothing paid yet. */
@@ -72,8 +77,16 @@ public class BillingService {
                     "Refund of $%.2f exceeds the amount paid so far ($%.2f).", -amount, billing.getTotalPaid()));
         }
 
-        paymentRepository.recordFor(reservation.getId(), method, amount);
-        return billingRepository.updateBalances(billing.getId(), newTotalPaid, newBalance);
+        Payment payment = paymentRepository.recordFor(reservation.getId(), method, amount);
+        Billing updated = billingRepository.updateBalances(billing.getId(), newTotalPaid, newBalance);
+
+        // Loyalty: an enrolled guest earns points on the amount actually paid (not refunds).
+        if (amount > 0) {
+            Optional<LoyaltyAccount> account = loyaltyService.findAccount(reservation.getGuest());
+            account.ifPresent(a -> loyaltyService.earn(a, amount, payment.getId()));
+        }
+
+        return updated;
     }
 
     public boolean isFullySettled(Reservation reservation) {

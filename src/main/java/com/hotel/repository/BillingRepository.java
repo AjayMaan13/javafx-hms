@@ -52,4 +52,15 @@ public class BillingRepository extends BaseRepository<Billing, UUID> {
             return billing;
         });
     }
+
+    /** Applies a loyalty-point redemption: records the discount + points and lowers the balance. */
+    public Billing applyLoyaltyDiscount(UUID billingId, double discountAmount, int pointsRedeemed) {
+        return inTransaction(em -> {
+            Billing billing = em.find(Billing.class, billingId);
+            billing.setLoyaltyDiscount(billing.getLoyaltyDiscount() + discountAmount);
+            billing.setPointsRedeemed(billing.getPointsRedeemed() + pointsRedeemed);
+            billing.setBalance(billing.getBalance() - discountAmount);
+            return billing;
+        });
+    }
 }

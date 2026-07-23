@@ -100,6 +100,16 @@ public class EstimateController implements KioskStepController {
         try {
             Reservation reservation = shell.getAppConfig().getReservationService().createReservation(draft);
             shell.setLastReservationId(reservation.getId());
+
+            // Loyalty enrolment uses the guest info already entered (per the brief).
+            if (draft.isLoyaltyOptIn()) {
+                String loyaltyNumber = shell.getAppConfig().getLoyaltyService()
+                        .enroll(reservation.getGuest()).getLoyaltyNumber();
+                shell.setLastLoyaltyNumber(loyaltyNumber);
+            } else {
+                shell.setLastLoyaltyNumber(null);
+            }
+
             errorLabel.setText("");
             shell.goNext();
         } catch (BookingValidationException e) {

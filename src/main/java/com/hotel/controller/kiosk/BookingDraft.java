@@ -29,6 +29,7 @@ public class BookingDraft {
     private String guestEmail;
     private String guestAddress;
     private String guestPostalCode;
+    private boolean loyaltyOptIn;
 
     public void reset() {
         adults = 0;
@@ -43,6 +44,15 @@ public class BookingDraft {
         guestEmail = null;
         guestAddress = null;
         guestPostalCode = null;
+        loyaltyOptIn = false;
+    }
+
+    public boolean isLoyaltyOptIn() {
+        return loyaltyOptIn;
+    }
+
+    public void setLoyaltyOptIn(boolean loyaltyOptIn) {
+        this.loyaltyOptIn = loyaltyOptIn;
     }
 
     public int getAdults() {

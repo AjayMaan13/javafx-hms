@@ -1,6 +1,7 @@
 package com.hotel.controller.kiosk;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
@@ -21,6 +22,8 @@ public class GuestDetailsController implements KioskStepController {
     @FXML
     private TextField postalCodeField;
     @FXML
+    private CheckBox loyaltyOptInCheck;
+    @FXML
     private Label errorLabel;
 
     private KioskShellController shell;
@@ -37,6 +40,7 @@ public class GuestDetailsController implements KioskStepController {
         emailField.setText(nullToEmpty(draft.getGuestEmail()));
         addressField.setText(nullToEmpty(draft.getGuestAddress()));
         postalCodeField.setText(nullToEmpty(draft.getGuestPostalCode()));
+        loyaltyOptInCheck.setSelected(draft.isLoyaltyOptIn());
     }
 
     private String nullToEmpty(String value) {
@@ -74,6 +78,7 @@ public class GuestDetailsController implements KioskStepController {
         draft.setGuestEmail(email);
         draft.setGuestAddress(addressField.getText().trim());
         draft.setGuestPostalCode(postalCodeField.getText().trim());
+        draft.setLoyaltyOptIn(loyaltyOptInCheck.isSelected());
 
         errorLabel.setText("");
         shell.goNext();

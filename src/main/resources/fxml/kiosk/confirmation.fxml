@@ -19,6 +19,7 @@
 
     <VBox alignment="CENTER" maxWidth="420.0" spacing="6.0" styleClass="card">
         <Label fx:id="confirmationLabel" style="-fx-font-weight: bold;" />
+        <Label fx:id="loyaltyLabel" styleClass="price-tag" managed="false" visible="false" />
         <Label styleClass="subtitle" text="Please settle your balance at the front desk on arrival." />
     </VBox>
 

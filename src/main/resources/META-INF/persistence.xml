@@ -17,6 +17,9 @@
         <class>com.hotel.model.Billing</class>
         <class>com.hotel.model.Waitlist</class>
         <class>com.hotel.model.AuditLog</class>
+        <class>com.hotel.model.LoyaltyAccount</class>
+        <class>com.hotel.model.LoyaltyConfig</class>
+        <class>com.hotel.model.LoyaltyTransaction</class>
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 

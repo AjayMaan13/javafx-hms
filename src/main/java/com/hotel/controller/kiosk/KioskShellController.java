@@ -45,6 +45,7 @@ public class KioskShellController {
     private AppConfig appConfig;
     private int currentIndex = 0;
     private UUID lastReservationId;
+    private String lastLoyaltyNumber;
 
     public void setAppConfig(AppConfig appConfig) {
         this.appConfig = appConfig;
@@ -65,6 +66,15 @@ public class KioskShellController {
 
     public void setLastReservationId(UUID lastReservationId) {
         this.lastReservationId = lastReservationId;
+    }
+
+    /** Loyalty number issued on the last booking, or null if the guest didn't enrol. */
+    public String getLastLoyaltyNumber() {
+        return lastLoyaltyNumber;
+    }
+
+    public void setLastLoyaltyNumber(String lastLoyaltyNumber) {
+        this.lastLoyaltyNumber = lastLoyaltyNumber;
     }
 
     public void goNext() {

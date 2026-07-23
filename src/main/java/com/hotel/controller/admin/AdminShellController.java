@@ -20,6 +20,7 @@ public class AdminShellController {
             "reservations", "ReservationDetail.fxml",
             "payments", "Payments.fxml",
             "checkout", "Checkout.fxml",
+            "loyalty", "LoyaltyView.fxml",
             "waitlist", "Waitlist.fxml",
             "feedback", "FeedbackView.fxml",
             "reports", "Reports.fxml"
@@ -30,6 +31,7 @@ public class AdminShellController {
             "reservations", "Reservation Detail",
             "payments", "Payments",
             "checkout", "Checkout",
+            "loyalty", "Loyalty",
             "waitlist", "Waitlist",
             "feedback", "Feedback",
             "reports", "Reports"
@@ -83,6 +85,15 @@ public class AdminShellController {
 
     public void openCheckout() {
         navigateTo("checkout");
+    }
+
+    public void openLoyalty() {
+        navigateTo("loyalty");
+    }
+
+    @FXML
+    private void showLoyalty() {
+        navigateTo("loyalty");
     }
 
     @FXML

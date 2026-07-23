@@ -78,8 +78,13 @@ public class PaymentsController implements AdminScreenController {
     private Reservation reservation;
 
     public PaymentsController() {
+        // TODO Phase 10: inject these from AppConfig instead of constructing per-controller.
+        com.hotel.service.LoyaltyService loyaltyService = new com.hotel.service.LoyaltyService(
+                new com.hotel.repository.LoyaltyAccountRepository(),
+                new com.hotel.repository.LoyaltyConfigRepository(),
+                new com.hotel.repository.LoyaltyTransactionRepository(), new BillingRepository());
         billingService = new BillingService(new BillingRepository(), new PaymentRepository(),
-                new ReservationRepository(), new RoomRepository());
+                new ReservationRepository(), new RoomRepository(), loyaltyService);
         activityLogService = new ActivityLogService(new AuditLogRepository(), LoggerService.getInstance());
     }
 

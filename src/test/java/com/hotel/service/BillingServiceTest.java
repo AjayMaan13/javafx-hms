@@ -33,8 +33,11 @@ class BillingServiceTest {
     private final BillingRepository billingRepository = new BillingRepository();
     private final PaymentRepository paymentRepository = new PaymentRepository();
 
+    private final LoyaltyService loyaltyService = new LoyaltyService(
+            new com.hotel.repository.LoyaltyAccountRepository(), new com.hotel.repository.LoyaltyConfigRepository(),
+            new com.hotel.repository.LoyaltyTransactionRepository(), billingRepository);
     private final BillingService billingService = new BillingService(
-            billingRepository, paymentRepository, reservationRepository, roomRepository);
+            billingRepository, paymentRepository, reservationRepository, roomRepository, loyaltyService);
 
     private Reservation newReservationWithTotal(double total, LocalDate checkIn, LocalDate checkOut, Room room) {
         Guest guest = new Guest("Bill Payer", "555-0300", "bill." + UUID.randomUUID() + "@example.com",

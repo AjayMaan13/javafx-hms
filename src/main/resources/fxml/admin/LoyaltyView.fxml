@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- ADMIN Loyalty dashboard: shows the selected reservation's guest loyalty account
+     (balance, tier, number), earning/redemption history, and a capped redeem form. -->
+<VBox spacing="16.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.hotel.controller.admin.LoyaltyViewController">
+    <padding>
+        <Insets bottom="20.0" left="24.0" right="24.0" top="20.0" />
+    </padding>
+
+    <Label fx:id="pageTitleLabel" styleClass="page-title" text="Loyalty" />
+    <Label fx:id="emptyStateLabel" styleClass="subtitle"
+           text="Select a reservation from the Dashboard (double-click a row), then choose Loyalty."
+           managed="false" visible="false" wrapText="true" />
+
+    <!-- Not enrolled: offer enrolment -->
+    <VBox fx:id="notEnrolledBox" spacing="10.0" styleClass="card" managed="false" visible="false">
+        <Label styleClass="field-label" text="This guest is not enrolled in Maple Rewards." />
+        <HBox>
+            <Button styleClass="primary-btn" text="Enrol Guest" onAction="#enrollGuest" />
+        </HBox>
+    </VBox>
+
+    <!-- Enrolled: account summary + redeem + history -->
+    <VBox fx:id="enrolledBox" spacing="16.0" managed="false" visible="false">
+        <HBox spacing="40.0" styleClass="card">
+            <VBox spacing="2.0">
+                <Label styleClass="field-label" text="Loyalty Number" />
+                <Label fx:id="numberLabel" style="-fx-font-weight: bold;" text="—" />
+            </VBox>
+            <VBox spacing="2.0">
+                <Label styleClass="field-label" text="Tier" />
+                <Label fx:id="tierLabel" text="—" />
+            </VBox>
+            <VBox spacing="2.0">
+                <Label styleClass="field-label" text="Points Balance" />
+                <Label fx:id="balanceLabel" styleClass="price-tag" style="-fx-font-size: 18px;" text="0" />
+            </VBox>
+        </HBox>
+
+        <VBox spacing="10.0" styleClass="card">
+            <Label styleClass="field-label" text="Redeem Points for a Bill Discount" />
+            <GridPane hgap="20.0" vgap="10.0">
+                <Label styleClass="field-label" text="Points" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <TextField fx:id="redeemPointsField" prefWidth="160.0" promptText="e.g. 200"
+                           GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            </GridPane>
+            <Label fx:id="redeemHintLabel" styleClass="subtitle" />
+            <HBox>
+                <Button styleClass="primary-btn" text="Redeem" onAction="#redeemPoints" />
+            </HBox>
+            <Label fx:id="messageLabel" styleClass="error-text" wrapText="true" />
+        </VBox>
+
+        <Label styleClass="field-label" text="Transaction History" />
+        <TableView fx:id="historyTable" prefHeight="220.0">
+            <columns>
+                <TableColumn fx:id="txDateColumn" prefWidth="170.0" text="Date/Time" />
+                <TableColumn fx:id="txTypeColumn" prefWidth="100.0" text="Type" />
+                <TableColumn fx:id="txDeltaColumn" prefWidth="100.0" text="Points" />
+                <TableColumn fx:id="txBalanceColumn" prefWidth="120.0" text="Balance After" />
+                <TableColumn fx:id="txDiscountColumn" prefWidth="120.0" text="Discount" />
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>

@@ -37,12 +37,17 @@ class ReservationServiceTest {
         ReservationRepository reservationRepository = new ReservationRepository();
         AddonRepository addonRepository = new AddonRepository();
         new DataSeeder(roomRepository, addonRepository, new com.hotel.repository.AdminUserRepository(),
+                new com.hotel.repository.LoyaltyConfigRepository(),
                 new com.hotel.security.BCryptPasswordHasher()).seedIfEmpty();
 
         PricingService pricingService = new PricingService(new StandardPricingStrategy());
+        LoyaltyService loyaltyService = new LoyaltyService(
+                new com.hotel.repository.LoyaltyAccountRepository(),
+                new com.hotel.repository.LoyaltyConfigRepository(),
+                new com.hotel.repository.LoyaltyTransactionRepository(), new com.hotel.repository.BillingRepository());
         BillingService billingService = new BillingService(
                 new com.hotel.repository.BillingRepository(), new com.hotel.repository.PaymentRepository(),
-                reservationRepository, roomRepository);
+                reservationRepository, roomRepository, loyaltyService);
         return new ReservationService(guestRepository, roomRepository, reservationRepository, addonRepository,
                 pricingService, billingService);
     }

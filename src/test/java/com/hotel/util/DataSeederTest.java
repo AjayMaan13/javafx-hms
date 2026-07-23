@@ -2,6 +2,7 @@ package com.hotel.util;
 
 import com.hotel.repository.AddonRepository;
 import com.hotel.repository.AdminUserRepository;
+import com.hotel.repository.LoyaltyConfigRepository;
 import com.hotel.repository.RoomRepository;
 import com.hotel.security.BCryptPasswordHasher;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ class DataSeederTest {
         AddonRepository addonRepository = new AddonRepository();
         AdminUserRepository adminUserRepository = new AdminUserRepository();
         DataSeeder seeder = new DataSeeder(roomRepository, addonRepository, adminUserRepository,
-                new BCryptPasswordHasher());
+                new LoyaltyConfigRepository(), new BCryptPasswordHasher());
 
         int roomCountBefore = roomRepository.findAll().size();
         int addonCountBefore = addonRepository.findAll().size();
