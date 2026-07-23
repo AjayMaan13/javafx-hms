@@ -68,6 +68,9 @@ public class LoginController {
 
                 Parent root = loader.load();
 
+                AdminShellController shellController = loader.getController();
+                shellController.setCurrentAdmin(admin.get());
+
                 Stage stage = new Stage();
                 stage.setTitle("Maple Leaf Hotel — Admin");
                 stage.setScene(new Scene(root));

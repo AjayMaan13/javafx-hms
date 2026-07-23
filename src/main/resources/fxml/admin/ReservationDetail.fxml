@@ -13,56 +13,63 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!-- ADMIN SCREEN 3 content only: Reservation detail / create / modify / cancel.
+<!-- ADMIN SCREEN 3 content only: Reservation detail / modify / cancel.
      Header/side-nav now live once in AdminShell.fxml. Supports group booking
-     (multiple rooms, one bill) via the room TableView. -->
+     (multiple rooms, one bill) via the room TableView. Opened from the Dashboard
+     with a real reservation (see AdminShellController.openReservationDetail). -->
 <VBox spacing="16.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.hotel.controller.admin.ReservationDetailController">
     <padding>
         <Insets bottom="20.0" left="24.0" right="24.0" top="20.0" />
     </padding>
 
-    <Label styleClass="page-title" text="Reservation #HMS-2026-00417" />
+    <Label fx:id="pageTitleLabel" styleClass="page-title" text="Reservation Detail" />
+    <Label fx:id="emptyStateLabel" styleClass="subtitle"
+           text="Select a reservation from the Dashboard (double-click a row) to view or edit it."
+           managed="false" visible="false" wrapText="true" />
 
-    <!-- Guest + dates -->
-    <VBox spacing="12.0" styleClass="card">
-        <GridPane hgap="24.0" vgap="10.0">
-            <Label styleClass="field-label" text="Guest name" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-            <TextField fx:id="guestNameField" prefWidth="200.0" promptText="Guest name from reservation"
-                       GridPane.columnIndex="1" GridPane.rowIndex="0" />
+    <VBox fx:id="detailContent" spacing="16.0">
+        <!-- Guest + dates -->
+        <VBox spacing="12.0" styleClass="card">
+            <GridPane hgap="24.0" vgap="10.0">
+                <Label styleClass="field-label" text="Guest name" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <TextField fx:id="guestNameField" editable="false" prefWidth="200.0"
+                           GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-            <Label styleClass="field-label" text="Phone" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-            <TextField fx:id="guestPhoneField" prefWidth="160.0" promptText="Phone from reservation"
-                       GridPane.columnIndex="3" GridPane.rowIndex="0" />
+                <Label styleClass="field-label" text="Phone" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                <TextField fx:id="guestPhoneField" editable="false" prefWidth="160.0"
+                           GridPane.columnIndex="3" GridPane.rowIndex="0" />
 
-            <Label styleClass="field-label" text="Check-in" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <DatePicker prefWidth="160.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Label styleClass="field-label" text="Check-in" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <DatePicker fx:id="checkInPicker" prefWidth="160.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-            <Label styleClass="field-label" text="Check-out" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <DatePicker prefWidth="160.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-        </GridPane>
-        <Label fx:id="messageLabel" styleClass="error-text" text="" />
+                <Label styleClass="field-label" text="Check-out" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                <DatePicker fx:id="checkOutPicker" prefWidth="160.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            </GridPane>
+            <Label fx:id="messageLabel" styleClass="error-text" text="" wrapText="true" />
+        </VBox>
+
+        <!-- Group booking: multiple rooms, one bill -->
+        <Label styleClass="field-label" text="Rooms on this reservation (group booking)" />
+        <TableView fx:id="roomsTable" prefHeight="160.0">
+            <columns>
+                <TableColumn fx:id="roomNumberColumn" prefWidth="120.0" text="Room #" />
+                <TableColumn fx:id="roomTypeColumn" prefWidth="140.0" text="Type" />
+                <TableColumn fx:id="roomRateColumn" prefWidth="140.0" text="Nightly Rate" />
+                <TableColumn fx:id="roomNightsColumn" prefWidth="100.0" text="Nights" />
+            </columns>
+        </TableView>
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <ComboBox fx:id="newRoomTypeCombo" promptText="Room type to add" />
+            <Button styleClass="secondary-btn" text="+ Add Room" onAction="#addRoom" />
+        </HBox>
+
+        <Region VBox.vgrow="ALWAYS" />
+
+        <HBox alignment="CENTER_RIGHT" spacing="12.0">
+            <ComboBox fx:id="statusComboBox" promptText="Change status" />
+            <Button styleClass="danger-btn" text="Cancel Reservation" onAction="#cancelReservation" />
+            <Button styleClass="primary-btn" text="Save Changes" onAction="#updateReservation" />
+        </HBox>
     </VBox>
-
-    <!-- Group booking: multiple rooms, one bill -->
-    <Label styleClass="field-label" text="Rooms on this reservation (group booking)" />
-    <TableView fx:id="roomsTable" prefHeight="160.0">
-        <columns>
-            <TableColumn prefWidth="120.0" text="Room #" />
-            <TableColumn prefWidth="140.0" text="Type" />
-            <TableColumn prefWidth="120.0" text="Nightly Rate" />
-            <TableColumn prefWidth="100.0" text="Nights" />
-        </columns>
-    </TableView>
-    <HBox>
-        <Button styleClass="secondary-btn" text="+ Add Room" onAction="#addRoom" />
-    </HBox>
-
-    <Region VBox.vgrow="ALWAYS" />
-
-    <HBox alignment="CENTER_RIGHT" spacing="12.0">
-        <ComboBox fx:id="statusComboBox" promptText="Change status" />
-        <Button styleClass="danger-btn" text="Cancel Reservation" onAction="#cancelReservation" />
-        <Button styleClass="primary-btn" text="Save Changes" onAction="#updateReservation" />
-    </HBox>
 </VBox>

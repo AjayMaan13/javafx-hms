@@ -1,5 +1,7 @@
 package com.hotel.controller.admin;
 
+import com.hotel.model.AdminUser;
+import com.hotel.model.Reservation;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -39,9 +41,34 @@ public class AdminShellController {
     @FXML
     private StackPane contentContainer;
 
+    private AdminUser currentAdmin;
+    private Reservation selectedReservationForDetail;
+
     @FXML
     private void initialize() {
         navigateTo("dashboard");
+    }
+
+    public void setCurrentAdmin(AdminUser currentAdmin) {
+        this.currentAdmin = currentAdmin;
+    }
+
+    public AdminUser getCurrentAdmin() {
+        return currentAdmin;
+    }
+
+    /** Opens Reservation Detail pre-loaded with the given reservation (e.g. from a Dashboard row). */
+    public void openReservationDetail(Reservation reservation) {
+        this.selectedReservationForDetail = reservation;
+        navigateTo("reservations");
+    }
+
+    /** Consumed by ReservationDetailController on load; cleared after reading so a later
+     *  direct nav to "Reservations" via the side menu correctly shows the empty state. */
+    public Reservation consumeSelectedReservationForDetail() {
+        Reservation reservation = this.selectedReservationForDetail;
+        this.selectedReservationForDetail = null;
+        return reservation;
     }
 
     @FXML
@@ -100,6 +127,12 @@ public class AdminShellController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/admin/" + SCREEN_FILES.get(key)));
             Parent node = loader.load();
+
+            Object controller = loader.getController();
+            if (controller instanceof AdminScreenController) {
+                ((AdminScreenController) controller).setShell(this);
+            }
+
             contentContainer.getChildren().setAll(node);
             screenLabel.setText(SCREEN_LABELS.get(key));
         } catch (IOException e) {

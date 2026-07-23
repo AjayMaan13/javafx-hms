@@ -22,6 +22,14 @@ public class RoomRepository extends BaseRepository<Room, UUID> {
             "    AND :checkIn < res.checkOut" +
             ")";
 
+    private static final String HAS_CONFLICT_EXCLUDING_RESERVATION_JPQL =
+            "SELECT COUNT(res) FROM Reservation res JOIN res.rooms r " +
+            "WHERE r.id = :roomId " +
+            "AND res.id <> :excludeReservationId " +
+            "AND res.status <> com.hotel.model.enums.ReservationStatus.CANCELLED " +
+            "AND res.checkIn < :checkOut " +
+            "AND :checkIn < res.checkOut";
+
     public RoomRepository() {
         super(Room.class);
     }
@@ -34,6 +42,26 @@ public class RoomRepository extends BaseRepository<Room, UUID> {
                     .setParameter("checkIn", checkIn)
                     .setParameter("checkOut", checkOut)
                     .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Same overlap check as findAvailable, but scoped to one specific room and excluding
+     * one reservation's own existing booking — needed when re-saving a reservation's own
+     * dates, since otherwise it would conflict with itself.
+     */
+    public boolean hasConflict(UUID roomId, LocalDate checkIn, LocalDate checkOut, UUID excludeReservationId) {
+        EntityManager em = PersistenceManager.getInstance().newEntityManager();
+        try {
+            Long conflicts = em.createQuery(HAS_CONFLICT_EXCLUDING_RESERVATION_JPQL, Long.class)
+                    .setParameter("roomId", roomId)
+                    .setParameter("excludeReservationId", excludeReservationId)
+                    .setParameter("checkIn", checkIn)
+                    .setParameter("checkOut", checkOut)
+                    .getSingleResult();
+            return conflicts > 0;
         } finally {
             em.close();
         }

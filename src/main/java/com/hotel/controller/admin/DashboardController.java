@@ -1,41 +1,115 @@
 package com.hotel.controller.admin;
 
 import com.hotel.model.Reservation;
-import com.hotel.model.Guest;
 import com.hotel.model.enums.ReservationStatus;
 import com.hotel.repository.ReservationRepository;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class DashboardController {
+public class DashboardController implements AdminScreenController {
+
+    @FXML
+    private TextField nameFilterField;
+
+    @FXML
+    private TextField phoneFilterField;
+
+    @FXML
+    private DatePicker fromDatePicker;
+
+    @FXML
+    private DatePicker toDatePicker;
+
+    @FXML
+    private ComboBox<String> statusFilterCombo;
 
     @FXML
     private TableView<Reservation> reservationTable;
 
     private final ReservationRepository reservationRepository;
+    private AdminShellController shell;
 
     public DashboardController() {
         reservationRepository = new ReservationRepository();
     }
 
+    @Override
+    public void setShell(AdminShellController shell) {
+        this.shell = shell;
+    }
+
     @FXML
     private void initialize() {
         configureReservationTable();
-        reservationTable.setPlaceholder(new Label("No kiosk reservations found yet."));
-        ObservableList<Reservation> reservations = FXCollections.observableArrayList(
-                reservationRepository.findAll()
-        );
-        if (reservations.isEmpty()) {
-            reservations.add(createDemoReservation());
+        configureRowDoubleClick();
+
+        statusFilterCombo.getItems().add("Any Status");
+        for (ReservationStatus status : ReservationStatus.values()) {
+            statusFilterCombo.getItems().add(status.name());
         }
+        statusFilterCombo.getSelectionModel().selectFirst();
+
+        reservationTable.setPlaceholder(new Label("No reservations found."));
+        loadAll();
+    }
+
+    @FXML
+    private void handleSearch() {
+        String name = nameFilterField.getText() == null ? "" : nameFilterField.getText().trim().toLowerCase();
+        String phone = phoneFilterField.getText() == null ? "" : phoneFilterField.getText().trim().toLowerCase();
+        LocalDate from = fromDatePicker.getValue();
+        LocalDate to = toDatePicker.getValue();
+        String status = statusFilterCombo.getValue();
+
+        List<Reservation> filtered = reservationRepository.findAllWithRooms().stream()
+                .filter(r -> name.isEmpty() || r.getGuest().getName().toLowerCase().contains(name))
+                .filter(r -> phone.isEmpty() || r.getGuest().getPhone().toLowerCase().contains(phone))
+                .filter(r -> from == null || !r.getCheckOut().isBefore(from))
+                .filter(r -> to == null || !r.getCheckIn().isAfter(to))
+                .filter(r -> status == null || status.equals("Any Status") || status.equals(r.getStatus().name()))
+                .collect(Collectors.toList());
+
+        reservationTable.setItems(FXCollections.observableArrayList(filtered));
+    }
+
+    @FXML
+    private void handleClearFilters() {
+        nameFilterField.clear();
+        phoneFilterField.clear();
+        fromDatePicker.setValue(null);
+        toDatePicker.setValue(null);
+        statusFilterCombo.getSelectionModel().selectFirst();
+        loadAll();
+    }
+
+    private void loadAll() {
+        ObservableList<Reservation> reservations = FXCollections.observableArrayList(reservationRepository.findAllWithRooms());
         reservationTable.setItems(reservations);
+    }
+
+    private void configureRowDoubleClick() {
+        reservationTable.setRowFactory(tableView -> {
+            TableRow<Reservation> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty() && shell != null) {
+                    shell.openReservationDetail(row.getItem());
+                }
+            });
+            return row;
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -72,32 +146,14 @@ public class DashboardController {
 
         TableColumn<Reservation, String> roomsColumn =
                 (TableColumn<Reservation, String>) reservationTable.getColumns().get(5);
-        roomsColumn.setCellValueFactory(data -> new SimpleStringProperty("View details"));
+        roomsColumn.setCellValueFactory(data -> new SimpleStringProperty(
+                data.getValue().getRooms().size() + " room(s)"
+        ));
 
         TableColumn<Reservation, String> balanceColumn =
                 (TableColumn<Reservation, String>) reservationTable.getColumns().get(6);
         balanceColumn.setCellValueFactory(data -> new SimpleStringProperty(
                 String.format("$%.2f", data.getValue().getTotal())
         ));
-    }
-
-    private Reservation createDemoReservation() {
-        Guest guest = new Guest(
-                "Demo Guest",
-                "555-0100",
-                "demo@example.com",
-                "Front Desk",
-                "A1A 1A1"
-        );
-        Reservation reservation = new Reservation(
-                guest,
-                LocalDate.now(),
-                LocalDate.now().plusDays(2),
-                2,
-                0,
-                ReservationStatus.CONFIRMED
-        );
-        reservation.setTotal(299.62);
-        return reservation;
     }
 }

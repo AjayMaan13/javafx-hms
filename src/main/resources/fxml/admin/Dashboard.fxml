@@ -26,34 +26,37 @@
 
         <VBox spacing="2">
             <Label text="Name"/>
-            <TextField promptText="Guest name"/>
+            <TextField fx:id="nameFilterField" promptText="Guest name"/>
         </VBox>
 
         <VBox spacing="2">
             <Label text="Phone"/>
-            <TextField promptText="Phone"/>
+            <TextField fx:id="phoneFilterField" promptText="Phone"/>
         </VBox>
 
         <VBox spacing="2">
             <Label text="From"/>
-            <DatePicker/>
+            <DatePicker fx:id="fromDatePicker"/>
         </VBox>
 
         <VBox spacing="2">
             <Label text="To"/>
-            <DatePicker/>
+            <DatePicker fx:id="toDatePicker"/>
         </VBox>
 
         <VBox spacing="2">
             <Label text="Status"/>
-            <ComboBox promptText="Any Status"/>
+            <ComboBox fx:id="statusFilterCombo" promptText="Any Status"/>
         </VBox>
 
         <Region HBox.hgrow="ALWAYS"/>
 
-        <Button text="Search"/>
+        <Button fx:id="searchButton" text="Search" onAction="#handleSearch"/>
+        <Button text="Clear" styleClass="secondary-btn" onAction="#handleClearFilters"/>
 
     </HBox>
+
+    <Label styleClass="subtitle" text="Double-click a row to open its Reservation Detail." />
 
     <TableView fx:id="reservationTable"
                VBox.vgrow="ALWAYS">
