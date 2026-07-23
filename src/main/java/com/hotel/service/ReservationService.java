@@ -11,8 +11,11 @@ import com.hotel.repository.AddonRepository;
 import com.hotel.repository.GuestRepository;
 import com.hotel.repository.ReservationRepository;
 import com.hotel.repository.RoomRepository;
+import com.hotel.service.billing.AddonDecoratorFactory;
+import com.hotel.service.billing.PricedBooking;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +50,13 @@ public class ReservationService {
         Guest guest = findOrCreateGuest(draft);
 
         double roomSubtotal = pricingService.calculateSubtotal(selectedRooms, draft.getCheckIn(), draft.getCheckOut());
-        double addonSubtotal = selectedAddons.stream().mapToDouble(Addon::getPrice).sum();
-        double subtotal = roomSubtotal + addonSubtotal;
+        long nights = ChronoUnit.DAYS.between(draft.getCheckIn(), draft.getCheckOut());
+
+        // Decorator pattern: wrap the base room subtotal with one decorator per add-on so the
+        // add-on costs (per-night for Wi-Fi/breakfast/parking, per-stay for spa) layer on
+        // without any add-on logic living in this service.
+        PricedBooking pricedBooking = AddonDecoratorFactory.priceBooking(roomSubtotal, nights, selectedAddons);
+        double subtotal = pricedBooking.price();
         double tax = pricingService.calculateTax(subtotal);
         double total = subtotal + tax;
 

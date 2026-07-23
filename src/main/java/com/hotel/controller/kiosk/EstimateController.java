@@ -7,9 +7,12 @@ import com.hotel.model.enums.RoomType;
 import com.hotel.service.BookingValidationException;
 import com.hotel.service.PricingService;
 import com.hotel.service.RoomFactory;
+import com.hotel.service.billing.AddonDecoratorFactory;
+import com.hotel.service.billing.PricedBooking;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,13 +69,17 @@ public class EstimateController implements KioskStepController {
         List<Addon> addons = shell.getAppConfig().getAddonRepository().findAll().stream()
                 .filter(addon -> draft.getSelectedAddonIds().contains(addon.getId()))
                 .collect(Collectors.toList());
-        double addonTotal = addons.stream().mapToDouble(Addon::getPrice).sum();
         addonsLabel.setText(addons.isEmpty() ? "None"
                 : addons.stream().map(Addon::getName).collect(Collectors.joining(", ")));
 
         PricingService pricingService = shell.getAppConfig().getPricingService();
         double roomSubtotal = pricingService.calculateSubtotal(previewRooms, draft.getCheckIn(), draft.getCheckOut());
-        double subtotal = roomSubtotal + addonTotal;
+        long nights = ChronoUnit.DAYS.between(draft.getCheckIn(), draft.getCheckOut());
+
+        // Same Decorator chain the ReservationService uses on confirm, so the preview total
+        // matches the persisted total exactly.
+        PricedBooking pricedBooking = AddonDecoratorFactory.priceBooking(roomSubtotal, nights, addons);
+        double subtotal = pricedBooking.price();
         double tax = pricingService.calculateTax(subtotal);
         double total = subtotal + tax;
 
