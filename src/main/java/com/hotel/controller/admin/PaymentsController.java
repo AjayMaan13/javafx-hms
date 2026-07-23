@@ -45,7 +45,7 @@ public class PaymentsController implements AdminScreenController {
     @FXML
     private Label balanceLabel;
 
-    // Phase 6 discount controls — present so the FXML loads; not wired yet.
+    // Discount controls — enforcement is by the logged-in admin's role (see DiscountService).
     @FXML
     private ComboBox<String> roleComboBox;
     @FXML
@@ -72,6 +72,7 @@ public class PaymentsController implements AdminScreenController {
     private TableColumn<Payment, String> paymentAmountColumn;
 
     private final BillingService billingService;
+    private final com.hotel.service.DiscountService discountService;
     private final ActivityLogService activityLogService;
 
     private AdminShellController shell;
@@ -85,6 +86,8 @@ public class PaymentsController implements AdminScreenController {
                 new com.hotel.repository.LoyaltyTransactionRepository(), new BillingRepository());
         billingService = new BillingService(new BillingRepository(), new PaymentRepository(),
                 new ReservationRepository(), new RoomRepository(), loyaltyService);
+        discountService = new com.hotel.service.DiscountService(
+                new BillingRepository(), new com.hotel.config.DiscountPolicy());
         activityLogService = new ActivityLogService(new AuditLogRepository(), LoggerService.getInstance());
     }
 
@@ -189,10 +192,53 @@ public class PaymentsController implements AdminScreenController {
         }
     }
 
-    // Phase 6 stubs — role-based discount caps arrive later.
     @FXML
     private void applyDiscount() {
-        messageLabel.setText("Role-based discounts are enabled in a later phase.");
+        if (shell.getCurrentAdmin() == null) {
+            messageLabel.setText("You must be logged in to apply a discount.");
+            return;
+        }
+
+        Double percent = parseDiscountPercent();
+        if (percent == null) {
+            return;
+        }
+
+        try {
+            double discount = discountService.apply(reservation, percent, shell.getCurrentAdmin());
+            activityLogService.record(shell.getCurrentAdmin(), "DISCOUNT_APPLIED", "Reservation",
+                    reservation.getId().toString(),
+                    String.format("%.1f%% discount ($%.2f) applied by %s.",
+                            percent, discount, shell.getCurrentAdmin().getUsername()));
+            customDiscountField.clear();
+            messageLabel.setText(String.format("Applied a %.1f%% discount ($%.2f).", percent, discount));
+            refresh();
+        } catch (com.hotel.service.DiscountException e) {
+            messageLabel.setText(e.getMessage());
+        }
+    }
+
+    /** Reads the discount percent from the custom field, falling back to the leading number
+     *  of a selected preset (e.g. "15% Admin Maximum" → 15). */
+    private Double parseDiscountPercent() {
+        String custom = customDiscountField.getText() == null ? "" : customDiscountField.getText().trim();
+        if (!custom.isEmpty()) {
+            try {
+                return Double.parseDouble(custom);
+            } catch (NumberFormatException e) {
+                messageLabel.setText("Enter a valid discount percentage.");
+                return null;
+            }
+        }
+        String preset = discountComboBox.getValue();
+        if (preset != null) {
+            java.util.regex.Matcher m = java.util.regex.Pattern.compile("(\\d+(?:\\.\\d+)?)").matcher(preset);
+            if (m.find()) {
+                return Double.parseDouble(m.group(1));
+            }
+        }
+        messageLabel.setText("Enter a discount percentage or choose a preset.");
+        return null;
     }
 
     @FXML

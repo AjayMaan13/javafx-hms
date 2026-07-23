@@ -63,4 +63,14 @@ public class BillingRepository extends BaseRepository<Billing, UUID> {
             return billing;
         });
     }
+
+    /** Applies a role-based/courtesy discount: records the discount and lowers the balance. */
+    public Billing applyDiscount(UUID billingId, double discountAmount) {
+        return inTransaction(em -> {
+            Billing billing = em.find(Billing.class, billingId);
+            billing.setDiscount(billing.getDiscount() + discountAmount);
+            billing.setBalance(billing.getBalance() - discountAmount);
+            return billing;
+        });
+    }
 }

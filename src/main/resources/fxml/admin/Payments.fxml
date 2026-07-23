@@ -62,7 +62,7 @@
                         <TextField fx:id="appliedByField" prefWidth="190.0" promptText="Employee name / ID" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                     </GridPane>
                     <Label styleClass="subtitle"
-                           text="Role-based discount caps (Admin 15% / Manager 30%) are enforced in a later phase." />
+                           text="Enter a percentage (or pick a preset). Caps are enforced by your role: Admin 15%, Manager 30%." />
                     <HBox spacing="12.0">
                         <Button styleClass="primary-btn" text="Apply Discount" onAction="#applyDiscount" />
                         <Button styleClass="secondary-btn" text="Clear Discount" onAction="#clearDiscount" />

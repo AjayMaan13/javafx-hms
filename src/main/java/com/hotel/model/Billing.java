@@ -22,6 +22,9 @@ public class Billing {
     @Column(name = "loyalty_discount")
     private double loyaltyDiscount;
 
+    /** Role-based / courtesy discount applied by an admin (separate from loyalty redemption). */
+    private double discount;
+
     @Column(name = "points_redeemed")
     private int pointsRedeemed;
 
@@ -40,6 +43,14 @@ public class Billing {
         this.reservation = reservation;
         this.totalDue = totalDue;
         this.balance = totalDue;
+    }
+
+    public double getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(double discount) {
+        this.discount = discount;
     }
 
     public UUID getId() {

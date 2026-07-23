@@ -11,10 +11,12 @@ import com.hotel.repository.LoyaltyTransactionRepository;
 import com.hotel.repository.PaymentRepository;
 import com.hotel.repository.ReservationRepository;
 import com.hotel.repository.RoomRepository;
+import com.hotel.config.DiscountPolicy;
 import com.hotel.security.AuthService;
 import com.hotel.security.BCryptPasswordHasher;
 import com.hotel.service.ActivityLogService;
 import com.hotel.service.BillingService;
+import com.hotel.service.DiscountService;
 import com.hotel.service.LoyaltyService;
 import com.hotel.service.PricingService;
 import com.hotel.service.ReservationService;
@@ -53,6 +55,7 @@ public class AppConfig {
             guestRepository, roomRepository, reservationRepository, addonRepository, pricingService, billingService);
     private final AuthService authService = new AuthService(adminUserRepository, passwordHasher);
     private final ActivityLogService activityLogService = new ActivityLogService(auditLogRepository, loggerService);
+    private final DiscountService discountService = new DiscountService(billingRepository, new DiscountPolicy());
 
     private final DataSeeder dataSeeder = new DataSeeder(roomRepository, addonRepository, adminUserRepository,
             loyaltyConfigRepository, passwordHasher);
@@ -75,6 +78,10 @@ public class AppConfig {
 
     public LoyaltyService getLoyaltyService() {
         return loyaltyService;
+    }
+
+    public DiscountService getDiscountService() {
+        return discountService;
     }
 
     public AddonRepository getAddonRepository() {
