@@ -8,16 +8,28 @@
 
 <StackPane fx:controller="com.hotel.controller.kiosk.WelcomeController"
            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
-    <VBox alignment="CENTER" spacing="24.0">
+    <VBox alignment="CENTER" maxWidth="460.0" spacing="20.0" styleClass="welcome-card">
         <padding>
             <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
         </padding>
 
-        <Label styleClass="page-title" text="Welcome! Let's get you checked in." />
-        <Label styleClass="subtitle" text="Book a room in a few quick steps — no waiting in line." wrapText="true" />
-        <Label text="• Check-out by 11:00 AM" wrapText="true" />
+        <!-- Hero graphic: a circular brand badge carrying the maple-leaf mark. -->
+        <StackPane styleClass="welcome-hero">
+            <Label styleClass="welcome-hero-emoji" text="🍁" />
+        </StackPane>
 
-        <Button onAction="#handleStartBooking" styleClass="primary-btn" text="Start Booking  →" />
-        <Button onAction="#handleLeaveFeedback" styleClass="secondary-btn" text="Leave Feedback" />
+        <Label styleClass="page-title" text="Welcome to Maple Leaf Hotel" />
+        <Label styleClass="subtitle" wrapText="true"
+               text="Self check-in — book a room in a few quick steps, no waiting in line." />
+
+        <VBox alignment="CENTER_LEFT" spacing="8.0" styleClass="welcome-features">
+            <Label styleClass="welcome-feature" text="✓   Choose your room and dates" />
+            <Label styleClass="welcome-feature" text="✓   Add extras like breakfast or parking" />
+            <Label styleClass="welcome-feature" text="✓   Instant confirmation on screen" />
+            <Label styleClass="welcome-feature-muted" text="🕚   Check-out by 11:00 AM" />
+        </VBox>
+
+        <Button maxWidth="Infinity" onAction="#handleStartBooking" styleClass="primary-btn" text="Start Booking  →" />
+        <Button maxWidth="Infinity" onAction="#handleLeaveFeedback" styleClass="secondary-btn" text="Leave Feedback" />
     </VBox>
 </StackPane>

@@ -98,6 +98,42 @@
     -fx-font-weight: bold;
 }
 
+/* ---- Kiosk welcome / hero ----------------------------------------------- */
+.welcome-card {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: #e6ebf1;
+    -fx-border-radius: 14;
+    -fx-effect: dropshadow(gaussian, rgba(31,58,95,0.12), 20, 0, 0, 6);
+}
+
+/* Circular brand badge behind the maple-leaf mark. Fixed size + full radius = circle. */
+.welcome-hero {
+    -fx-min-width: 132; -fx-min-height: 132;
+    -fx-max-width: 132; -fx-max-height: 132;
+    -fx-background-color: linear-gradient(to bottom right, #1f3a5f, #2f6fb0);
+    -fx-background-radius: 100;
+    -fx-effect: dropshadow(gaussian, rgba(31,58,95,0.35), 18, 0, 0, 8);
+}
+
+.welcome-hero-emoji {
+    -fx-font-size: 66px;
+}
+
+.welcome-features {
+    -fx-padding: 4 0 4 0;
+}
+
+.welcome-feature {
+    -fx-font-size: 14px;
+    -fx-text-fill: #2e7d32;
+}
+
+.welcome-feature-muted {
+    -fx-font-size: 14px;
+    -fx-text-fill: #5a6b7b;
+}
+
 /* ---- Cards -------------------------------------------------------------- */
 .card {
     -fx-background-color: white;

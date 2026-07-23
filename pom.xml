@@ -95,6 +95,13 @@
                             <mainClass>com.hotel.app.Main</mainClass>
                         </configuration>
                     </execution>
+                    <execution>
+                        <!-- Dev tool: regenerate doc screenshots with mvn javafx:run@screenshots -->
+                        <id>screenshots</id>
+                        <configuration>
+                            <mainClass>com.hotel.tools.ScreenshotTool</mainClass>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

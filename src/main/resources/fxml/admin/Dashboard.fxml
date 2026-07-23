@@ -20,41 +20,47 @@
     <Label styleClass="page-title"
            text="Guests &amp; Reservations"/>
 
-    <HBox spacing="12"
-          alignment="CENTER_LEFT"
-          styleClass="card">
+    <!-- FlowPane so the filter fields wrap instead of truncating on a narrow window. -->
+    <FlowPane hgap="12" vgap="10"
+              alignment="CENTER_LEFT"
+              styleClass="card">
 
         <VBox spacing="2">
             <Label text="Name"/>
-            <TextField fx:id="nameFilterField" promptText="Guest name"/>
+            <TextField fx:id="nameFilterField" prefWidth="120" promptText="Guest name"/>
         </VBox>
 
         <VBox spacing="2">
             <Label text="Phone"/>
-            <TextField fx:id="phoneFilterField" promptText="Phone"/>
+            <TextField fx:id="phoneFilterField" prefWidth="100" promptText="Phone"/>
         </VBox>
 
         <VBox spacing="2">
             <Label text="From"/>
-            <DatePicker fx:id="fromDatePicker"/>
+            <DatePicker fx:id="fromDatePicker" prefWidth="120"/>
         </VBox>
 
         <VBox spacing="2">
             <Label text="To"/>
-            <DatePicker fx:id="toDatePicker"/>
+            <DatePicker fx:id="toDatePicker" prefWidth="120"/>
         </VBox>
 
         <VBox spacing="2">
             <Label text="Status"/>
-            <ComboBox fx:id="statusFilterCombo" promptText="Any Status"/>
+            <ComboBox fx:id="statusFilterCombo" minWidth="130" prefWidth="130" promptText="Any Status"/>
         </VBox>
 
-        <Region HBox.hgrow="ALWAYS"/>
+        <VBox spacing="2">
+            <Label text=" "/>
+            <Button fx:id="searchButton" minWidth="80" text="Search" onAction="#handleSearch"/>
+        </VBox>
 
-        <Button fx:id="searchButton" text="Search" onAction="#handleSearch"/>
-        <Button text="Clear" styleClass="secondary-btn" onAction="#handleClearFilters"/>
+        <VBox spacing="2">
+            <Label text=" "/>
+            <Button minWidth="70" text="Clear" styleClass="secondary-btn" onAction="#handleClearFilters"/>
+        </VBox>
 
-    </HBox>
+    </FlowPane>
 
     <Label styleClass="subtitle" text="Double-click a row to open its Reservation Detail." />
 
