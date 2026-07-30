@@ -33,15 +33,15 @@
                 <HBox spacing="40.0" styleClass="card">
                     <VBox spacing="2.0">
                         <Label styleClass="field-label" text="Total Due" />
-                        <Label fx:id="totalDueLabel" style="-fx-font-size: 18px; -fx-font-weight: bold;" text="$0.00" />
+                        <Label fx:id="totalDueLabel" style="-fx-font-size: 18px; -fx-font-weight: bold;" text="\$0.00" />
                     </VBox>
                     <VBox spacing="2.0">
                         <Label styleClass="field-label" text="Total Paid" />
-                        <Label fx:id="totalPaidLabel" styleClass="price-tag" style="-fx-font-size: 18px;" text="$0.00" />
+                        <Label fx:id="totalPaidLabel" styleClass="price-tag" style="-fx-font-size: 18px;" text="\$0.00" />
                     </VBox>
                     <VBox spacing="2.0">
                         <Label styleClass="field-label" text="Outstanding Balance" />
-                        <Label fx:id="balanceLabel" styleClass="balance-due" style="-fx-font-size: 18px;" text="$0.00" />
+                        <Label fx:id="balanceLabel" styleClass="balance-due" style="-fx-font-size: 18px;" text="\$0.00" />
                     </VBox>
                 </HBox>
 

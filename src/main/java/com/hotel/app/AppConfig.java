@@ -84,7 +84,7 @@ public class AppConfig {
     private final ActivityLogService activityLogService = new ActivityLogService(auditLogRepository, loggerService);
     private final DiscountService discountService = new DiscountService(billingRepository, discountPolicy);
     private final FeedbackService feedbackService = new FeedbackService(
-            reservationRepository, guestRepository, feedbackRepository, billingService);
+            reservationRepository, guestRepository, feedbackRepository, billingService, true);
     private final ReportingService reportingService = new ReportingService(
             reservationRepository, roomRepository, billingRepository, auditLogRepository);
 

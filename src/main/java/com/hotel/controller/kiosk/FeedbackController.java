@@ -29,16 +29,23 @@ public class FeedbackController implements KioskStepController {
     @FXML
     private Label messageLabel;
 
+    private static final String DEFAULT_EMAIL = "guest@demo.com";
+
     private KioskShellController shell;
+    private BookingDraft draft;
 
     @Override
     public void init(KioskShellController shell, BookingDraft draft) {
         this.shell = shell;
+        this.draft = draft;
     }
 
     @Override
     public void onShow() {
-        emailField.clear();
+        // Prefill with the email just booked with (or a default) so feedback is easy to try.
+        String prefill = draft != null && draft.getGuestEmail() != null && !draft.getGuestEmail().isBlank()
+                ? draft.getGuestEmail() : DEFAULT_EMAIL;
+        emailField.setText(prefill);
         hide(stayBox);
         hide(confirmationBox);
         messageLabel.setText("");

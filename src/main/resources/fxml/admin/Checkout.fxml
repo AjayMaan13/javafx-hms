@@ -29,10 +29,10 @@
         <VBox maxWidth="420.0" spacing="10.0" styleClass="card">
             <GridPane hgap="40.0" vgap="10.0">
                 <Label text="Total Bill" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                <Label fx:id="totalDueLabel" GridPane.columnIndex="1" GridPane.rowIndex="0" text="$0.00" />
+                <Label fx:id="totalDueLabel" GridPane.columnIndex="1" GridPane.rowIndex="0" text="\$0.00" />
 
                 <Label text="Already Paid" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                <Label fx:id="totalPaidLabel" GridPane.columnIndex="1" GridPane.rowIndex="1" text="$0.00" />
+                <Label fx:id="totalPaidLabel" GridPane.columnIndex="1" GridPane.rowIndex="1" text="\$0.00" />
             </GridPane>
 
             <Separator />
@@ -40,7 +40,7 @@
             <HBox>
                 <Label styleClass="balance-due" style="-fx-font-size: 18px;" text="Balance Due" />
                 <Region HBox.hgrow="ALWAYS" />
-                <Label fx:id="balanceLabel" styleClass="balance-due" style="-fx-font-size: 18px;" text="$0.00" />
+                <Label fx:id="balanceLabel" styleClass="balance-due" style="-fx-font-size: 18px;" text="\$0.00" />
             </HBox>
         </VBox>
 

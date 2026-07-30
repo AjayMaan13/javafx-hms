@@ -19,13 +19,24 @@ public class FeedbackService {
     private final GuestRepository guestRepository;
     private final FeedbackRepository feedbackRepository;
     private final BillingService billingService;
+    // Demo shortcut: when true, feedback can be left on any booking (skips the
+    // checked-out + fully-settled requirement) so it can be shown right after booking.
+    // Off by default, so the strict rules (and their tests) are unchanged.
+    private final boolean demoBypass;
 
     public FeedbackService(ReservationRepository reservationRepository, GuestRepository guestRepository,
                             FeedbackRepository feedbackRepository, BillingService billingService) {
+        this(reservationRepository, guestRepository, feedbackRepository, billingService, false);
+    }
+
+    public FeedbackService(ReservationRepository reservationRepository, GuestRepository guestRepository,
+                            FeedbackRepository feedbackRepository, BillingService billingService,
+                            boolean demoBypass) {
         this.reservationRepository = reservationRepository;
         this.guestRepository = guestRepository;
         this.feedbackRepository = feedbackRepository;
         this.billingService = billingService;
+        this.demoBypass = demoBypass;
     }
 
     /**
@@ -34,11 +45,33 @@ public class FeedbackService {
      * checkout and after all reservation balances are settled").
      */
     public List<Reservation> findEligibleReservations(String email) {
+        if (demoBypass) {
+            return findForDemo(email);
+        }
         return guestRepository.findByEmail(email)
                 .map(guest -> reservationRepository.findCheckedOutWithoutFeedback(guest.getId()).stream()
                         .filter(billingService::isFullySettled)
                         .collect(Collectors.toList()))
                 .orElse(List.of());
+    }
+
+    /**
+     * Demo path: any reservation without feedback for this guest (no checkout/settlement
+     * requirement). If the email matches no guest, falls back to all un-reviewed stays so
+     * the prefilled default email always finds something.
+     */
+    private List<Reservation> findForDemo(String email) {
+        List<Reservation> withoutFeedback = reservationRepository.findAllWithRooms().stream()
+                .filter(r -> feedbackRepository.findByReservationId(r.getId()).isEmpty())
+                .collect(Collectors.toList());
+        return guestRepository.findByEmail(email)
+                .map(guest -> {
+                    List<Reservation> forGuest = withoutFeedback.stream()
+                            .filter(r -> r.getGuest().getId().equals(guest.getId()))
+                            .collect(Collectors.toList());
+                    return forGuest.isEmpty() ? withoutFeedback : forGuest;
+                })
+                .orElse(withoutFeedback);
     }
 
     /**
@@ -56,11 +89,13 @@ public class FeedbackService {
             throw new FeedbackException("Comment must be " + MAX_COMMENT_LENGTH + " characters or fewer.");
         }
 
-        if (reservation.getStatus() != ReservationStatus.CHECKED_OUT) {
-            throw new FeedbackException("Feedback is only available after checkout.");
-        }
-        if (!billingService.isFullySettled(reservation)) {
-            throw new FeedbackException("Feedback is only available once your balance is fully settled.");
+        if (!demoBypass) {
+            if (reservation.getStatus() != ReservationStatus.CHECKED_OUT) {
+                throw new FeedbackException("Feedback is only available after checkout.");
+            }
+            if (!billingService.isFullySettled(reservation)) {
+                throw new FeedbackException("Feedback is only available once your balance is fully settled.");
+            }
         }
         if (feedbackRepository.findByReservationId(reservation.getId()).isPresent()) {
             throw new FeedbackException("Feedback has already been submitted for this stay.");
